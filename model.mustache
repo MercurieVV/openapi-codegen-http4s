@@ -1,0 +1,47 @@
+{{>licenseInfo}}
+
+package {{package}}
+
+{{#imports}}import {{import}}
+{{/imports}}
+import com.fasterxml.jackson.core.`type`.TypeReference
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+
+import javax.validation.constraints._
+import enumeratum._
+
+{{#models}}
+    {{#model}}
+        {{#isEnum}}
+            {{>enumOuterClass}}
+        {{/isEnum}}
+        {{^isEnum}}
+            {{#vars}}
+                {{#isEnum}}
+                    {{^isContainer}}
+                        {{>enumClass}}
+                    {{/isContainer}}
+                {{/isEnum}}
+                {{#items.isEnum}}
+                    {{#items}}
+                        {{^isContainer}}
+                            {{>enumClass}}
+                        {{/isContainer}}
+                    {{/items}}
+                {{/items.isEnum}}
+            {{/vars}}
+
+            case class {{classname}} (
+            {{#vars}}
+                {{#description}}
+                    /* {{{description}}} */
+                {{/description}}
+                @NotNull @JsonProperty("{{baseName}}") {{#vendorExtensions.isExternalEnum}} {{/vendorExtensions.isExternalEnum}}{{name}}: {{^required}}Option[{{/required}}{{#isEnum}}{{classname}}{{/isEnum}}{{{datatypeWithEnum}}}{{^required}}]{{/required}}{{#hasMore}},{{/hasMore}}
+            {{/vars}}
+
+            )
+
+
+        {{/isEnum}}
+    {{/model}}
+{{/models}}
