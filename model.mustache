@@ -13,6 +13,13 @@ import enumeratum._
             {{>enumOuterClass}}
         {{/isEnum}}
         {{^isEnum}}
+    case class {{classname}} (
+    {{#vars}}
+        {{#vendorExtensions.isExternalEnum}} {{/vendorExtensions.isExternalEnum}}{{& name}}: {{^required}}Option[{{/required}}{{#isEnum}}{{classname}}.{{/isEnum}}{{{datatypeWithEnum}}}{{^required}}]{{/required}}{{#hasMore}},{{/hasMore}}{{#description}}/* {{{description}}} */ {{/description}}
+    {{/vars}}
+    )
+
+    object {{classname}} {
             {{#vars}}
                 {{#isEnum}}
                     {{^isContainer}}
@@ -27,15 +34,7 @@ import enumeratum._
                     {{/items}}
                 {{/items.isEnum}}
             {{/vars}}
-
-    case class {{classname}} (
-    {{#vars}}
-        {{#description}}
-            /* {{{description}}} */
-        {{/description}}
-        {{#vendorExtensions.isExternalEnum}} {{/vendorExtensions.isExternalEnum}}{{& name}}: {{^required}}Option[{{/required}}{{#isEnum}}{{classname}}{{/isEnum}}{{{datatypeWithEnum}}}{{^required}}]{{/required}}{{#hasMore}},{{/hasMore}}
-    {{/vars}}
-    )
+    }
 
 
         {{/isEnum}}

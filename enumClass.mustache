@@ -1,9 +1,9 @@
 
-sealed trait {{classname}}{{#datatypeWithEnum}}{{{.}}}{{/datatypeWithEnum}}{{^datatypeWithEnum}}{{classname}}{{/datatypeWithEnum}} extends EnumEntry{
-override def toString: String = this.getClass.getSimpleName.replace("$", "")
+sealed trait {{#datatypeWithEnum}}{{{.}}}{{/datatypeWithEnum}}{{^datatypeWithEnum}}{{/datatypeWithEnum}} extends EnumEntry{
+override def toString: String = this.asInstanceOf[scala.Product].productPrefix
 }
-object {{classname}}{{#datatypeWithEnum}}{{{.}}}{{/datatypeWithEnum}}{{^datatypeWithEnum}}{{classname}}{{/datatypeWithEnum}} extends Enum[{{classname}}{{#datatypeWithEnum}}{{{.}}}{{/datatypeWithEnum}}{{^datatypeWithEnum}}{{classname}}{{/datatypeWithEnum}}] with CirceEnum[{{classname}}{{#datatypeWithEnum}}{{{.}}}{{/datatypeWithEnum}}{{^datatypeWithEnum}}{{classname}}{{/datatypeWithEnum}}] {
+object {{#datatypeWithEnum}}{{{.}}}{{/datatypeWithEnum}}{{^datatypeWithEnum}}{{/datatypeWithEnum}} extends Enum[{{#datatypeWithEnum}}{{{.}}}{{/datatypeWithEnum}}{{^datatypeWithEnum}}{{/datatypeWithEnum}}] with CirceEnum[{{#datatypeWithEnum}}{{{.}}}{{/datatypeWithEnum}}{{^datatypeWithEnum}}{{/datatypeWithEnum}}] {
 val values = findValues
-{{#allowableValues}}{{#enumVars}}  case object {{{name}}} extends {{classname}}{{#datatypeWithEnum}}{{{.}}}{{/datatypeWithEnum}}{{^datatypeWithEnum}}{{classname}}{{/datatypeWithEnum}}
+{{#allowableValues}}{{#enumVars}}  case object {{{name}}} extends {{#datatypeWithEnum}}{{{.}}}{{/datatypeWithEnum}}{{^datatypeWithEnum}}{{/datatypeWithEnum}}
 {{/enumVars}}{{/allowableValues}}
 }
