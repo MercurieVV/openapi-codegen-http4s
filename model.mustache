@@ -4,9 +4,6 @@ package {{package}}
 
 {{#imports}}import {{import}}
 {{/imports}}
-import com.fasterxml.jackson.core.`type`.TypeReference
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-
 import javax.validation.constraints._
 import enumeratum._
 
@@ -19,27 +16,26 @@ import enumeratum._
             {{#vars}}
                 {{#isEnum}}
                     {{^isContainer}}
-                        {{>enumClass}}
+    {{>enumClass}}
                     {{/isContainer}}
                 {{/isEnum}}
                 {{#items.isEnum}}
                     {{#items}}
                         {{^isContainer}}
-                            {{>enumClass}}
+    {{>enumClass}}
                         {{/isContainer}}
                     {{/items}}
                 {{/items.isEnum}}
             {{/vars}}
 
-            case class {{classname}} (
-            {{#vars}}
-                {{#description}}
-                    /* {{{description}}} */
-                {{/description}}
-                @NotNull @JsonProperty("{{baseName}}") {{#vendorExtensions.isExternalEnum}} {{/vendorExtensions.isExternalEnum}}{{name}}: {{^required}}Option[{{/required}}{{#isEnum}}{{classname}}{{/isEnum}}{{{datatypeWithEnum}}}{{^required}}]{{/required}}{{#hasMore}},{{/hasMore}}
-            {{/vars}}
-
-            )
+    case class {{classname}} (
+    {{#vars}}
+        {{#description}}
+            /* {{{description}}} */
+        {{/description}}
+        {{#vendorExtensions.isExternalEnum}} {{/vendorExtensions.isExternalEnum}}{{& name}}: {{^required}}Option[{{/required}}{{#isEnum}}{{classname}}{{/isEnum}}{{{datatypeWithEnum}}}{{^required}}]{{/required}}{{#hasMore}},{{/hasMore}}
+    {{/vars}}
+    )
 
 
         {{/isEnum}}

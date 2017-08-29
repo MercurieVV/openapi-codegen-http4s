@@ -1,9 +1,8 @@
-@JsonDeserialize(using = classOf[EnumeratumDeserializer[{{classname}}{{{datatypeWithEnum}}}]])
+
 sealed trait {{classname}}{{#datatypeWithEnum}}{{{.}}}{{/datatypeWithEnum}}{{^datatypeWithEnum}}{{classname}}{{/datatypeWithEnum}} extends EnumEntry{
-@JsonValue override def toString: String = this.getClass.getSimpleName.replace("$", "")
-//@JsonCreator override def withName(name: String): {{classname}}{{#datatypeWithEnum}}{{{.}}}{{/datatypeWithEnum}}{{^datatypeWithEnum}}{{classname}}{{/datatypeWithEnum}} = super.withName(name)
+override def toString: String = this.getClass.getSimpleName.replace("$", "")
 }
-object {{classname}}{{#datatypeWithEnum}}{{{.}}}{{/datatypeWithEnum}}{{^datatypeWithEnum}}{{classname}}{{/datatypeWithEnum}} extends Enum[{{classname}}{{#datatypeWithEnum}}{{{.}}}{{/datatypeWithEnum}}{{^datatypeWithEnum}}{{classname}}{{/datatypeWithEnum}}] {
+object {{classname}}{{#datatypeWithEnum}}{{{.}}}{{/datatypeWithEnum}}{{^datatypeWithEnum}}{{classname}}{{/datatypeWithEnum}} extends Enum[{{classname}}{{#datatypeWithEnum}}{{{.}}}{{/datatypeWithEnum}}{{^datatypeWithEnum}}{{classname}}{{/datatypeWithEnum}}] with CirceEnum[{{classname}}{{#datatypeWithEnum}}{{{.}}}{{/datatypeWithEnum}}{{^datatypeWithEnum}}{{classname}}{{/datatypeWithEnum}}] {
 val values = findValues
 {{#allowableValues}}{{#enumVars}}  case object {{{name}}} extends {{classname}}{{#datatypeWithEnum}}{{{.}}}{{/datatypeWithEnum}}{{^datatypeWithEnum}}{{classname}}{{/datatypeWithEnum}}
 {{/enumVars}}{{/allowableValues}}

@@ -1,1 +1,1 @@
-{{#isPathParam}}pathParam[{{dataType}}]("{{paramName}}").description(""){{#defaultValue}}.defaultValue({{{defaultValue}}}){{/defaultValue}}{{/isPathParam}}
+{{#isPathParam}}{{paramName}}: {{dataType}} {{#defaultValue}} = ({{{defaultValue}}}){{/defaultValue}}{{/isPathParam}}

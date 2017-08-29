@@ -5,17 +5,27 @@ package {{package}}
 {{#imports}}import {{import}}
 {{/imports}}
 
-import java.io.File
+import io.circe._
+import org.http4s._
+import org.http4s.circe._
+import org.http4s.dsl._
+import io.circe._, io.circe.generic.auto._, io.circe.parser._, io.circe.syntax._
+import org.http4s.client.Client
+import fs2.Task
+import org.http4s.Uri
+import io.circe.java8.time._
 
-import org.scalatra.{ TypedParamSupport, ScalatraServlet }
-import org.scalatra.swagger._
-import org.json4s._
-import org.json4s.JsonDSL._
-import org.scalatra.json.{ JValueResult, JacksonJsonSupport }
-import org.scalatra.servlet.{FileUploadSupport, MultipartConfig, SizeConstraintExceededException}
+class {{classname}}(httpClient: Client, basePath:  Uri) {
+{{#operations}}
+  {{#operation}}
+    def {{nickname}}({{#allParams}}{{paramName}}: {{dataType}} {{#defaultValue}} = ({{{defaultValue}}}){{/defaultValue}}{{#hasMore}}, {{/hasMore}}{{/allParams}}): Task[{{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}Unit{{/returnType}}] = {
+        httpClient.expect(basePath / {{& vendorExtensions.x-routeType}})(jsonOf[{{{returnType}}}])
+    }
+  {{/operation}}
+{{/operations}}
+}
 
-import scala.collection.JavaConverters._
-
+/*
 class {{classname}} (implicit val swagger: Swagger) extends ScalatraServlet
 with FileUploadSupport
 with JacksonJsonSupport
@@ -52,3 +62,4 @@ response.headers += ("Access-Control-Allow-Origin" -> "*")
     {{/operation}}
 {{/operations}}
 }
+*/

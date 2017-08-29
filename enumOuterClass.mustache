@@ -1,14 +1,8 @@
-{{#jackson}}
-    import com.fasterxml.jackson.annotation.JsonCreator;
-    import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-{{/jackson}}
 
-@JsonDeserialize(using = classOf[EnumeratumDeserializer[{{classname}}]])
 sealed trait {{classname}} extends EnumEntry{
-@JsonValue override def toString: String = this.getClass.getSimpleName.replace("$", "")
-//@JsonCreator override def withName(name: String): {{classname}} = super.withName(name)
+override def toString: String = this.getClass.getSimpleName.replace("$", "")
 }
-object {{classname}} extends Enum[{{classname}}] {
+object {{classname}} extends Enum[{{classname}}] with CirceEnum[{{classname}}] {
 val values = findValues
 {{#allowableValues}}{{#enumVars}}  case object {{{name}}} extends {{classname}}
 {{/enumVars}}{{/allowableValues}}
