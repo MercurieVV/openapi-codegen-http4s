@@ -18,8 +18,9 @@ import io.circe.java8.time._
 class {{classname}}(httpClient: Client, basePath:  Uri) {
 {{#operations}}
   {{#operation}}
-    def {{nickname}}({{#allParams}}{{paramName}}: {{#required}}{{dataType}}{{/required}}{{^required}}Option[{{dataType}}]{{/required}} {{#defaultValue}} = ({{{defaultValue}}}){{/defaultValue}}{{#hasMore}}, {{/hasMore}}{{/allParams}}): Task[{{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}Unit{{/returnType}}] = {
-        httpClient.expect(basePath / {{& vendorExtensions.x-routeType}})(jsonOf[{{{returnType}}}])
+    {{#isListContainer}}case class {{{returnType}}}ListWrapper({{{vendorExtensions.returnTypeVar}}}: List[{{{returnType}}}]){{/isListContainer}}
+    def {{nickname}}({{#allParams}}{{paramName}}: {{#required}}{{dataType}}{{/required}}{{^required}}Option[{{dataType}}]{{/required}} {{#defaultValue}} = ({{{defaultValue}}}){{/defaultValue}}{{#hasMore}}, {{/hasMore}}{{/allParams}}): Task[{{>returnType}}] = {
+        httpClient.expect(basePath / {{& vendorExtensions.x-routeType}})(jsonOf[{{>returnType}}])
     }
   {{/operation}}
 {{/operations}}
