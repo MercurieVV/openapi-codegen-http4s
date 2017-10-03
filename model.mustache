@@ -1,0 +1,41 @@
+{{>licenseInfo}}
+
+package {{package}}
+
+{{#imports}}import {{import}}
+{{/imports}}
+import enumeratum._
+
+{{#models}}
+    {{#model}}
+        {{#isEnum}}
+            {{>enumOuterClass}}
+        {{/isEnum}}
+        {{^isEnum}}
+    case class {{classname}} (
+    {{#vars}}
+        {{#vendorExtensions.isExternalEnum}} {{/vendorExtensions.isExternalEnum}}{{& name}}: {{^required}}Option[{{/required}}{{#isEnum}}{{classname}}.{{/isEnum}}{{{datatypeWithEnum}}}{{^required}}]{{/required}}{{#hasMore}},{{/hasMore}}{{#description}}/* {{{description}}} */ {{/description}}
+    {{/vars}}
+    )
+
+    object {{classname}} {
+            {{#vars}}
+                {{#isEnum}}
+                    {{^isContainer}}
+    {{>enumClass}}
+                    {{/isContainer}}
+                {{/isEnum}}
+                {{#items.isEnum}}
+                    {{#items}}
+                        {{^isContainer}}
+    {{>enumClass}}
+                        {{/isContainer}}
+                    {{/items}}
+                {{/items.isEnum}}
+            {{/vars}}
+    }
+
+
+        {{/isEnum}}
+    {{/model}}
+{{/models}}

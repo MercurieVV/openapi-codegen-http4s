@@ -1,0 +1,84 @@
+{{>licenseInfo}}
+
+package {{package}}
+
+{{#imports}}import {{import}}
+{{/imports}}
+
+import {{package}}.impl._
+import io.circe._
+import org.http4s._
+import org.http4s.circe._
+import org.http4s.dsl._
+import io.circe._, io.circe.generic.auto._, io.circe.parser._, io.circe.syntax._
+import org.http4s.client.Client
+import fs2.Task
+import org.http4s.Uri
+import io.circe.java8.time._
+
+class {{classname}}(requestProcessor: RequestProcessor, requestProcessorFactory: RequestProcessorFactory) {
+    val helloWorldService = HttpService {
+{{#operations}}
+  {{#operation}}
+    case req @ {{httpMethod}} -> Root / {{& vendorExtensions.x-routeType}} => requestProcessor.{{#isListContainer}}requestMany{{/isListContainer}}{{^isListContainer}}requestOne{{/isListContainer}}(Request_{{operationId}}({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}), requestProcessorFactory.getProcessor(classOf[Process_{{operationId}}]))
+    //Ok({{>returnType}}.asJson)//classOf[Process_{{operationId}}]
+/*
+    def {{nickname}}({{#allParams}}{{paramName}}: {{#required}}{{dataType}}{{/required}}{{^required}}Option[{{dataType}}]{{/required}} {{#defaultValue}} = ({{{defaultValue}}}){{/defaultValue}}{{#hasMore}}, {{/hasMore}}{{/allParams}}): Task[{{>returnType}}] = {
+        httpClient.expect(basePath / {{& vendorExtensions.x-routeType}})(jsonOf[{{>returnType}}])
+    }
+*/
+  {{/operation}}
+{{/operations}}
+    }
+}
+
+{{#operations}}
+  {{#operation}}
+    {{#isListContainer}}case class {{{returnType}}}ListWrapper({{{vendorExtensions.returnTypeVar}}}: List[{{{returnType}}}]){{/isListContainer}}
+        case class Request_{{operationId}} (
+        {{#allParams}}
+            {{paramName}}: {{{dataType}}};
+        {{/allParams}}
+        )
+  {{/operation}}
+{{/operations}}
+
+
+/*
+class {{classname}} (implicit val swagger: Swagger) extends ScalatraServlet
+with FileUploadSupport
+with JacksonJsonSupport
+with SwaggerSupport {
+protected implicit val jsonFormats: Formats = DefaultFormats
+
+protected val applicationDescription: String = "{{classname}}"
+override protected val applicationName: Option[String] = Some("{{basePathWithoutHost}}/{{baseName}}")
+
+before() {
+contentType = formats("json")
+response.headers += ("Access-Control-Allow-Origin" -> "*")
+}
+{{#operations}}
+    {{#operation}}
+        {{newline}}
+
+        val {{nickname}}Operation = (apiOperation[{{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}Unit{{/returnType}}]("{{nickname}}")
+        summary "{{{summary}}}"
+        parameters({{#allParams}}{{>queryParam}}{{>pathParam}}{{>bodyParam}}{{>formParam}}{{>headerParam}}{{#hasMore}}, {{/hasMore}}{{/allParams}})
+        )
+
+        {{httpMethod}}("{{{vendorExtensions.x-scalatra-path}}}",operation({{nickname}}Operation)) {
+        {{#allParams}}
+            {{#isFile}}val {{paramName}} = fileParams("{{paramName}}"){{/isFile}}
+            {{^isFile}}{{#isPathParam}}
+                val {{paramName}} = params.getOrElse("{{paramName}}", halt(400)){{/isPathParam}}
+            {{>queryParamOperation}}{{>headerParamOperation}}{{>formParamMustache}}{{>bodyParamOperation}}
+            {{/isFile}}
+            println("{{paramName}}: " + {{paramName}})
+        {{/allParams}}
+        }
+
+    {{/operation}}
+{{/operations}}
+}
+*/
