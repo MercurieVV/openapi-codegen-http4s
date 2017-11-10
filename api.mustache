@@ -6,6 +6,7 @@ package {{package}}
 {{/imports}}
 
 import co.nextwireless.common.ws._
+import co.nextwireless.common.ws.http4s._
 import {{modelPackage}}._
 
 import {{package}}.impl._
@@ -13,7 +14,7 @@ import io.circe.generic.auto._
 import io.circe.syntax._
 import io.circe.java8.time._
 import org.http4s._
-import org.http4s.circe._
+//import org.http4s.circe._
 import org.http4s.dsl._
 import io.circe._, io.circe.generic.auto._, io.circe.parser._, io.circe.syntax._
 import fs2.Task
