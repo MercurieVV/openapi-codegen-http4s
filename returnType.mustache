@@ -1,1 +1,1 @@
-{{#isListContainer}}RestEmbedded[{{{returnType}}}ListWrapper]{{/isListContainer}}{{^isListContainer}}{{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}Unit{{/returnType}}{{/isListContainer}}
+{{#returnContainer}}{{#isMapContainer}}Map<String, {{{returnType}}}>{{/isMapContainer}}{{#isListContainer}}List[{{{returnType}}}]{{/isListContainer}}{{/returnContainer}}{{^returnContainer}}{{{returnType}}}{{/returnContainer}}
