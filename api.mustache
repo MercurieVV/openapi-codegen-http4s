@@ -21,10 +21,10 @@ import fs2.Task
 import io.circe.java8.time._
 
 class {{classname}}(requestProcessorExecuter: RequestProcessorExecuter, processors: {{classname}}ProcessorsModule) {
-    val httpService = HttpService {
+   val httpService = HttpService {
 {{#operations}}
   {{#operation}}
-        case req @ {{httpMethod}} -> Root / {{& vendorExtensions.x-routeType}} => requestProcessorExecuter.process[Request_{{operationId}}, {{>returnTypes}}, Process_{{operationId}}](processors.process_{{operationId}}, Request_{{operationId}}({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}), _.asJson)
+        case req @ {{httpMethod}} -> Root / {{& vendorExtensions.x-routeType}} => requestProcessorExecuter.process[Request_{{operationId}}, {{>returnType}}, Process_{{operationId}}](processors.process_{{operationId}}, Request_{{operationId}}({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}), _.asJson)
   {{/operation}}
 {{/operations}}
     }
@@ -32,10 +32,18 @@ class {{classname}}(requestProcessorExecuter: RequestProcessorExecuter, processo
 
 {{#operations}}
   {{#operation}}
+    {{#allParams}}
+    object Decoder_{{operationId}}_{{paramName}} extends QueryParamDecoderMatcher[{{#required}}{{{dataType}}}{{/required}}{{^required}}Option[{{{dataType}}}]{{/required}}]("{{operationId}}_{{paramName}}")
+    {{/allParams}}
+  {{/operation}}
+{{/operations}}
+
+{{#operations}}
+  {{#operation}}
     {{#isListContainer}}case class {{{returnType}}}ListWrapper({{{vendorExtensions.returnTypeVar}}}: List[{{{returnType}}}]){{/isListContainer}}
     case class Request_{{operationId}} (
     {{#allParams}}
-        {{paramName}}: {{{dataType}}}{{#hasMore}},{{/hasMore}}
+        {{paramName}}: {{#required}}{{{dataType}}}{{/required}}{{^required}}Option[{{{dataType}}}]{{/required}}{{#hasMore}},{{/hasMore}}
     {{/allParams}}
     )
   {{/operation}}
