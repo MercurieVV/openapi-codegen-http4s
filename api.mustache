@@ -13,37 +13,56 @@ import {{package}}.impl._
 import io.circe.generic.auto._
 import io.circe.syntax._
 import io.circe.java8.time._
-import org.http4s._
-//import org.http4s.circe._
+import org.http4s.HttpService
+import org.http4s.QueryParamDecoder.fromUnsafeCast
+import org.http4s.circe._
 import org.http4s.dsl._
 import io.circe._, io.circe.generic.auto._, io.circe.parser._, io.circe.syntax._
 import fs2.Task
 import io.circe.java8.time._
+import RequestProcessorExecuter._
 
 class {{classname}}(requestProcessorExecuter: RequestProcessorExecuter, processors: {{classname}}ProcessorsModule) {
    val httpService = HttpService {
 {{#operations}}
   {{#operation}}
-        case req @ {{httpMethod}} -> Root / {{& vendorExtensions.x-routeType}} => requestProcessorExecuter.process[Request_{{operationId}}, {{>returnType}}, Process_{{operationId}}](processors.process_{{operationId}}, Request_{{operationId}}({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}), _.asJson)
+        case req @ {{httpMethod}} -> Root / {{& vendorExtensions.x-routeType}} =>
+          requestProcessorExecuter.process[Request_{{operationId}}, {{>returnType}}, Process_{{operationId}}](
+            processors.process_{{operationId}}
+            , Request_{{operationId}}({{>params}})
+            , _.asJson
+          )
   {{/operation}}
 {{/operations}}
     }
 }
 
+//INPUT PARAMS DECODERS
 {{#operations}}
   {{#operation}}
     {{#allParams}}
-    object Decoder_{{operationId}}_{{paramName}} extends QueryParamDecoderMatcher[{{#required}}{{{dataType}}}{{/required}}{{^required}}Option[{{{dataType}}}]{{/required}}]("{{operationId}}_{{paramName}}")
+    {{^isBodyParam}}
+    {{#isListContainer}}
+    object Decoder_{{operationId}}_{{paramName}} {
+     def unapplySeq(params: Map[String, {{>paramDatatype}}]) = params.get("{{operationId}}_{{paramName}}")
+     def unapply(params: Map[String, {{>paramDatatype}}]) = unapplySeq(params)
+    }
+    {{/isListContainer}}
+    {{^isListContainer}}
+    object Decoder_{{operationId}}_{{paramName}} extends {{^required}}Optional{{/required}}QueryParamDecoderMatcher[{{{dataType}}}]("{{operationId}}_{{paramName}}")
+    {{/isListContainer}}
+    {{/isBodyParam}}
     {{/allParams}}
   {{/operation}}
 {{/operations}}
 
+//INPUT DATA CASE CLASSES
 {{#operations}}
   {{#operation}}
     {{#isListContainer}}case class {{{returnType}}}ListWrapper({{{vendorExtensions.returnTypeVar}}}: List[{{{returnType}}}]){{/isListContainer}}
     case class Request_{{operationId}} (
     {{#allParams}}
-        {{paramName}}: {{#required}}{{{dataType}}}{{/required}}{{^required}}Option[{{{dataType}}}]{{/required}}{{#hasMore}},{{/hasMore}}
+        {{paramName}}: {{#isBodyParam}}Task[{{/isBodyParam}}{{>paramDatatype}}{{#isBodyParam}}]{{/isBodyParam}}{{#hasMore}},{{/hasMore}}
     {{/allParams}}
     )
   {{/operation}}
