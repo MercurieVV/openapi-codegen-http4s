@@ -1,1 +1,1 @@
-{{#isHeaderParam}}{{paramName}}{{/isHeaderParam}}
+{{#isHeaderParam}}req.headers.find(_.name == "{{paramName}}").map(_.value){{/isHeaderParam}}

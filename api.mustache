@@ -20,14 +20,13 @@ import org.http4s.dsl._
 import io.circe._, io.circe.generic.auto._, io.circe.parser._, io.circe.syntax._
 import fs2.Task
 import io.circe.java8.time._
-import RequestProcessorExecuter._
 
-class {{classname}}(requestProcessorExecuter: RequestProcessorExecuter, processors: {{classname}}ProcessorsModule) {
+class {{classname}}(executionHelper: ExecutionHelper, processors: {{classname}}ProcessorsModule) {
    val httpService = HttpService {
 {{#operations}}
   {{#operation}}
         case req @ {{httpMethod}} -> Root / {{& vendorExtensions.x-routeType}} =>
-          requestProcessorExecuter.process[Request_{{operationId}}, {{>returnType}}, Process_{{operationId}}](
+          executionHelper.process[Request_{{operationId}}, {{>returnType}}, Process_{{operationId}}](
             processors.process_{{operationId}}
             , Request_{{operationId}}({{>params}})
             , _.asJson
@@ -62,7 +61,7 @@ class {{classname}}(requestProcessorExecuter: RequestProcessorExecuter, processo
     {{#isListContainer}}case class {{{returnType}}}ListWrapper({{{vendorExtensions.returnTypeVar}}}: List[{{{returnType}}}]){{/isListContainer}}
     case class Request_{{operationId}} (
     {{#allParams}}
-        {{paramName}}: {{#isBodyParam}}Task[{{/isBodyParam}}{{>paramDatatype}}{{#isBodyParam}}]{{/isBodyParam}}{{#hasMore}},{{/hasMore}}
+        {{paramName}}: {{#isBodyParam}}{{#futureType}}Task[{{/futureType}}{{/isBodyParam}}{{>paramDatatype}}{{#isBodyParam}}{{#futureType}}]{{/futureType}}{{/isBodyParam}}{{#hasMore}},{{/hasMore}}
     {{/allParams}}
     )
   {{/operation}}

@@ -1,1 +1,1 @@
-{{#isBodyParam}}req.as(jsonOf[{{>paramDatatype}}]){{/isBodyParam}}
+{{#isBodyParam}}executionHelper.processBody(req.as(jsonOf[{{>paramDatatype}}])){{/isBodyParam}}
