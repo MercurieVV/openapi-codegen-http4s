@@ -20,6 +20,7 @@ import org.http4s.dsl._
 import io.circe._, io.circe.generic.auto._, io.circe.parser._, io.circe.syntax._
 import fs2.Task
 import io.circe.java8.time._
+import RequestProcessorExecuter._
 
 class {{classname}}(executionHelper: ExecutionHelper, processors: {{classname}}ProcessorsModule) {
    val httpService = HttpService {
