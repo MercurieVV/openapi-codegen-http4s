@@ -17,17 +17,15 @@ import org.http4s.HttpService
 import org.http4s.QueryParamDecoder.fromUnsafeCast
 import org.http4s.circe._
 import org.http4s.dsl._
-import io.circe._, io.circe.generic.auto._, io.circe.parser._, io.circe.syntax._
-import fs2.Task
-import io.circe.java8.time._
-import RequestProcessorExecuter._
+import cats.effect._, org.http4s.dsl.io._, scala.concurrent.ExecutionContext.Implicits.global
+import DefaultRequestProcessorExecuter._
 
 class {{classname}}(executionHelper: ExecutionHelper, processors: {{classname}}ProcessorsModule) {
-   val httpService = HttpService {
+   val httpService = HttpService[IO] {
 {{#operations}}
   {{#operation}}
         case req @ {{httpMethod}} -> Root / {{& vendorExtensions.x-routeType}} =>
-          executionHelper.process[Request_{{operationId}}, {{>returnType}}, Process_{{operationId}}](
+          executionHelper.process{{^isListContainer}}Single{{/isListContainer}}{{#isListContainer}}Sequence{{/isListContainer}}[Request_{{operationId}}, {{>returnType}}, Process_{{operationId}}](
             processors.process_{{operationId}}
             , Request_{{operationId}}({{>params}})
             , _.asJson
