@@ -25,8 +25,8 @@ class {{classname}}(executionHelper: ExecutionHelper, processors: {{classname}}P
 {{#operations}}
   {{#operation}}
         case req @ {{httpMethod}} -> Root / {{& vendorExtensions.x-routeType}} =>
-          executionHelper.process{{^isListContainer}}Single{{/isListContainer}}{{#isListContainer}}Sequence{{/isListContainer}}[Request_{{operationId}}, {{>returnType}}, Process_{{operationId}}](
-            processors.process_{{operationId}}
+          executionHelper.process{{^isListContainer}}Single{{/isListContainer}}{{#isListContainer}}Sequence{{/isListContainer}}[Request_{{operationId}}, {{>returnType}}, Request_{{operationId}} => {{^isListContainer}}Single{{/isListContainer}}{{#isListContainer}}Sequence{{/isListContainer}}[{{>returnType}}]]( //Process_{{operationId}}
+            processors.{{operationId}}
             , Request_{{operationId}}({{>params}})
             , _.asJson
           )
