@@ -34,6 +34,8 @@ class {{classname}}(executionHelper: ExecutionHelper, processors: {{classname}}P
                 req <- EitherT.liftF[IO, Throwable, Request_{{operationId}}](IO {Request_{{operationId}}({{>params}})})
             ) yield req}.value
             , _.asJson
+            , req
+            , processors.buildInfo
           )
   {{/operation}}
 {{/operations}}
