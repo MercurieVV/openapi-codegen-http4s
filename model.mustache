@@ -14,7 +14,7 @@ import enumeratum._
         {{^isEnum}}
     case class {{classname}} (
     {{#vars}}
-        {{#vendorExtensions.isExternalEnum}} {{/vendorExtensions.isExternalEnum}}{{& name}}: {{^required}}Option[{{/required}}{{#isEnum}}{{classname}}.{{/isEnum}}{{{datatypeWithEnum}}}{{^required}}]{{/required}}{{#hasMore}},{{/hasMore}}{{#description}}/* {{{description}}} */ {{/description}}
+        {{#vendorExtensions.isExternalEnum}} {{/vendorExtensions.isExternalEnum}}{{& name}}: {{^required}}Option[{{/required}}{{#isEnum}}{{classname}}.{{/isEnum}}{{{datatypeWithEnum}}}{{>valuePredicates}}{{^required}}]{{/required}}{{#hasMore}},{{/hasMore}}{{#description}}/* {{{description}}} */ {{/description}}
     {{/vars}}
     )
 
