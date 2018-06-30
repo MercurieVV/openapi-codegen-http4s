@@ -5,62 +5,35 @@ package {{package}}
 {{#imports}}import {{import}}
 {{/imports}}
 
-import io.circe._
-import org.http4s._
-import org.http4s.circe._
-import org.http4s.dsl._
-import io.circe._, io.circe.generic.auto._, io.circe.parser._, io.circe.syntax._
-import org.http4s.client.Client
-import fs2.Task
-import org.http4s.Uri
+import co.nextwireless.common.ws._
+import co.nextwireless.common.ws.http4s._
+import {{modelPackage}}._
+import {{package}}.impl._
+
+import io.circe.generic.auto._
+import io.circe.syntax._
 import io.circe.java8.time._
 
-class {{classname}}(httpClient: Client, basePath:  Uri) {
+import org.http4s.HttpService
+import org.http4s.QueryParamDecoder.fromUnsafeCast
+import org.http4s.circe._
+import org.http4s.dsl._
+import org.http4s.dsl.io._
+import org.http4s.client.Client
+import org.http4s.{HttpService, Uri}
+import cats.effect._, org.http4s.dsl.io._, scala.concurrent.ExecutionContext.Implicits.global
+import DefaultRequestProcessorExecuter._
+import cats.data.EitherT
+
+class {{classname}}(httpClient: Client[IO], basePath:  Uri, clientExecutionHelper: ClientExecutionHelper) {
+    import clientExecutionHelper._
 {{#operations}}
   {{#operation}}
     {{#isListContainer}}case class {{{returnType}}}ListWrapper({{{vendorExtensions.returnTypeVar}}}: List[{{{returnType}}}]){{/isListContainer}}
-    def {{nickname}}({{#allParams}}{{paramName}}: {{#required}}{{dataType}}{{/required}}{{^required}}Option[{{dataType}}]{{/required}} {{#defaultValue}} = ({{{defaultValue}}}){{/defaultValue}}{{#hasMore}}, {{/hasMore}}{{/allParams}}): Task[{{>returnType}}] = {
-        httpClient.expect(basePath / {{& vendorExtensions.x-routeType}})(jsonOf[{{>returnType}}])
+    def {{nickname}}({{#allParams}}{{paramName}}: {{#required}}{{dataType}}{{/required}}{{^required}}Option[{{dataType}}]{{/required}} {{#defaultValue}} = ({{{defaultValue}}}){{/defaultValue}}{{#hasMore}}, {{/hasMore}}{{/allParams}}): IO[{{>returnType}}] = {
+        httpClient.expect(basePath / {{& vendorExtensions.x-routeTypeClient}} {{#allParams}}{{>queryParam}}{{/allParams}})(jsonOf[IO, {{>returnType}}])
     }
   {{/operation}}
 {{/operations}}
 }
 
-/*
-class {{classname}} (implicit val swagger: Swagger) extends ScalatraServlet
-with FileUploadSupport
-with JacksonJsonSupport
-with SwaggerSupport {
-protected implicit val jsonFormats: Formats = DefaultFormats
-
-protected val applicationDescription: String = "{{classname}}"
-override protected val applicationName: Option[String] = Some("{{basePathWithoutHost}}/{{baseName}}")
-
-before() {
-contentType = formats("json")
-response.headers += ("Access-Control-Allow-Origin" -> "*")
-}
-{{#operations}}
-    {{#operation}}
-        {{newline}}
-
-        val {{nickname}}Operation = (apiOperation[{{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}Unit{{/returnType}}]("{{nickname}}")
-        summary "{{{summary}}}"
-        parameters({{#allParams}}{{>queryParam}}{{>pathParam}}{{>bodyParam}}{{>formParam}}{{>headerParam}}{{#hasMore}}, {{/hasMore}}{{/allParams}})
-        )
-
-        {{httpMethod}}("{{{vendorExtensions.x-scalatra-path}}}",operation({{nickname}}Operation)) {
-        {{#allParams}}
-            {{#isFile}}val {{paramName}} = fileParams("{{paramName}}"){{/isFile}}
-            {{^isFile}}{{#isPathParam}}
-                val {{paramName}} = params.getOrElse("{{paramName}}", halt(400)){{/isPathParam}}
-            {{>queryParamOperation}}{{>headerParamOperation}}{{>formParamMustache}}{{>bodyParamOperation}}
-            {{/isFile}}
-            println("{{paramName}}: " + {{paramName}})
-        {{/allParams}}
-        }
-
-    {{/operation}}
-{{/operations}}
-}
-*/
