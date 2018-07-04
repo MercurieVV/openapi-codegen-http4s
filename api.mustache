@@ -26,7 +26,7 @@ class {{classname}}(executionHelper: ExecutionHelper, processors: {{classname}}P
    val httpService = HttpService[IO] {
 {{#operations}}
   {{#operation}}
-        case req @ {{httpMethod}} -> executionHelper.Root / {{& vendorExtensions.x-routeType}} =>
+        case req @ {{httpMethod}} -> Root / {{& vendorExtensions.x-routeType}} =>
           executionHelper.process{{^isListContainer}}Single{{/isListContainer}}{{#isListContainer}}Sequence{{/isListContainer}}[Request_{{operationId}}, {{>returnType}}]( //Process_{{operationId}}
             processors.{{operationId}}
             ,{for(
