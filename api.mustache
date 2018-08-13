@@ -5,6 +5,7 @@ package {{package}}
 {{#imports}}import {{import}}
 {{/imports}}
 
+import co.nextwireless.common.types._
 import co.nextwireless.common.ws._
 import co.nextwireless.common.ws.http4s._
 import {{modelPackage}}._
@@ -31,7 +32,7 @@ class {{classname}}(executionHelper: ExecutionHelper, processors: {{classname}}P
           executionHelper.process{{^isListContainer}}Single{{/isListContainer}}{{#isListContainer}}Sequence{{/isListContainer}}[Request_{{operationId}}, {{>returnType}}]( //Process_{{operationId}}
             processors.{{operationId}}
             ,{for(
-                {{#allParams}}{{#isQueryParam}}{{^isListContainer}}{{paramName}} <- EitherT(IO {validation({{paramName}})});
+                {{#allParams}}{{#isQueryParam}}{{^isListContainer}}{{paramName}} <- EitherT(IO {validation({{paramName}}D)});
                 {{/isListContainer}}{{/isQueryParam}}{{/allParams}}
                 req <- EitherT.liftF[IO, Throwable, Request_{{operationId}}](IO {Request_{{operationId}}({{>params}})})
             ) yield req}.value
