@@ -1,1 +1,1 @@
-{{#isListContainer}}{{{returnType}}}ListWrapper{{/isListContainer}}{{^isListContainer}}{{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}Unit{{/returnType}}{{/isListContainer}}
+{{#isListContainer}}{{#isWrapper}}{{{returnType}}}ListWrapper{{/isWrapper}}{{^isWrapper}}List[{{{returnType}}}]{{/isWrapper}}{{/isListContainer}}{{^isListContainer}}{{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}Unit{{/returnType}}{{/isListContainer}}

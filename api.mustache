@@ -5,6 +5,7 @@ package {{package}}
 {{#imports}}import {{import}}
 {{/imports}}
 
+import co.nextwireless.common.types._
 import co.nextwireless.common.ws._
 import co.nextwireless.common.ws.http4s._
 import {{modelPackage}}._
@@ -29,8 +30,8 @@ class {{classname}}(httpClient: Client[IO], basePath:  Uri, clientExecutionHelpe
     import clientExecutionHelper._
 {{#operations}}
   {{#operation}}
-    {{#isListContainer}}case class {{{returnType}}}ListWrapper({{{vendorExtensions.returnTypeVar}}}: List[{{{returnType}}}]){{/isListContainer}}
-    def {{nickname}}({{#allParams}}{{paramName}}: {{#required}}{{dataType}}{{/required}}{{^required}}Option[{{dataType}}]{{/required}} {{#defaultValue}} = ({{{defaultValue}}}){{/defaultValue}}{{#hasMore}}, {{/hasMore}}{{/allParams}}): IO[{{>returnType}}] = {
+    {{#isWrapper}}{{#isListContainer}}case class {{{returnType}}}ListWrapper({{{vendorExtensions.returnTypeVar}}}: List[{{{returnType}}}]){{/isListContainer}}{{/isWrapper}}
+    def {{nickname}}({{#allParams}}{{paramName}}: {{#required}}{{dataType}}{{>valuePredicates}}{{/required}}{{^required}}Option[{{dataType}}{{>valuePredicates}}]{{/required}} {{#defaultValue}} = ({{{defaultValue}}}){{/defaultValue}}{{#hasMore}}, {{/hasMore}}{{/allParams}}): IO[{{>returnType}}] = {
         httpClient.expect(basePath / {{& vendorExtensions.x-routeTypeClient}} {{#allParams}}{{>queryParam}}{{/allParams}})(jsonOf[IO, {{>returnType}}])
     }
   {{/operation}}
