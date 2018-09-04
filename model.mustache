@@ -15,7 +15,7 @@ import co.nextwireless.common.types._
         {{^isEnum}}
     case class {{classname}} (
     {{#vars}}
-        {{#vendorExtensions.isExternalEnum}} {{/vendorExtensions.isExternalEnum}}{{& name}}: {{^required}}Option[{{/required}}{{#isEnum}}{{classname}}.{{/isEnum}}{{{datatypeWithEnum}}}{{^required}}]{{/required}}{{#hasMore}},{{/hasMore}}{{#description}}/* {{{description}}} */ {{/description}}
+        {{#vendorExtensions.isExternalEnum}} {{/vendorExtensions.isExternalEnum}}{{& name}}: {{>dataType}}{{#hasMore}},{{/hasMore}}{{#description}}/* {{{description}}} */ {{/description}}
     {{/vars}}
     )
 

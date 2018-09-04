@@ -32,7 +32,7 @@ class {{classname}}(httpClient: Client[IO], basePath:  Uri, clientExecutionHelpe
   {{#operation}}
     {{#isWrapper}}{{#isListContainer}}case class {{{returnType}}}ListWrapper({{{vendorExtensions.returnTypeVar}}}: List[{{{returnType}}}]){{/isListContainer}}{{/isWrapper}}
     def {{nickname}}({{#allParams}}{{paramName}}: {{#required}}{{dataType}}{{>valuePredicates}}{{/required}}{{^required}}Option[{{dataType}}{{>valuePredicates}}]{{/required}} {{#defaultValue}} = ({{{defaultValue}}}){{/defaultValue}}{{#hasMore}}, {{/hasMore}}{{/allParams}}): IO[{{>returnType}}] = {
-        httpClient.expect{{^returnType}}[Unit]{{/returnType}}(basePath / {{& vendorExtensions.x-routeTypeClient}} {{#allParams}}{{>queryParam}}{{/allParams}}){{#returnType}}{{{returnType}}}(jsonOf[IO, {{>returnType}}]){{/returnType}}
+        httpClient.expect{{^returnType}}[Unit]{{/returnType}}(basePath / {{& vendorExtensions.x-routeTypeClient}} {{#allParams}}{{>queryParam}}{{/allParams}}){{#returnType}}(jsonOf[IO, {{>returnType}}]){{/returnType}}
     }
   {{/operation}}
 {{/operations}}
