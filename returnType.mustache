@@ -1,1 +1,1 @@
-{{#returnContainer}}{{#isMapContainer}}Map<String, {{{returnType}}}>{{/isMapContainer}}{{{returnType}}}{{/returnContainer}}{{^returnContainer}}{{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}Unit{{/returnType}}{{/returnContainer}}
+{{#returnContainer}}{{vendorExtensions.typeName}}{{{returnType}}}{{/returnContainer}}{{^returnContainer}}{{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}Unit{{/returnType}}{{/returnContainer}}
