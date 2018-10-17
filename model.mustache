@@ -4,8 +4,9 @@ package {{package}}
 
 {{#imports}}import {{import}}
 {{/imports}}
+//import co.nextwireless.common.types._ - use impl per project
+import {{apiPackage}}.impl._
 import enumeratum._
-import co.nextwireless.common.types._
 
 {{#models}}
     {{#model}}
