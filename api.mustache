@@ -15,7 +15,7 @@ import io.circe.generic.auto._
 import io.circe.syntax._
 import io.circe.java8.time._
 
-import org.http4s.HttpService
+import org.http4s._
 import org.http4s.QueryParamDecoder.fromUnsafeCast
 import org.http4s.circe._
 import org.http4s.dsl._
@@ -33,7 +33,11 @@ class {{classname}}(httpClient: Client[IO], basePath:  Uri, clientExecutionHelpe
   {{#operation}}
     {{#isWrapper}}{{#isListContainer}}case class {{{returnType}}}ListWrapper({{{vendorExtensions.returnTypeVar}}}: List[{{{returnType}}}]){{/isListContainer}}{{/isWrapper}}
     def {{nickname}}({{#allParams}}{{paramName}}: {{#required}}{{dataType}}{{>valuePredicates}}{{/required}}{{^required}}Option[{{dataType}}{{>valuePredicates}}]{{/required}} {{#defaultValue}} = ({{{defaultValue}}}){{/defaultValue}}{{#hasMore}}, {{/hasMore}}{{/allParams}}): IO[{{>returnType}}] = {
-        httpClient.expect{{^returnType}}[Unit]{{/returnType}}(basePath / {{& vendorExtensions.x-routeTypeClient}} {{#allParams}}{{>queryParam}}{{/allParams}}){{#returnType}}(jsonOf[IO, {{>returnType}}]){{/returnType}}
+        httpClient.expect{{^returnType}}[Unit]{{/returnType}}(Request[IO](
+            method = Method.{{httpMethod}},
+            uri = basePath / {{& vendorExtensions.x-routeTypeClient}} {{#allParams}}{{>queryParam}}{{/allParams}},
+            {{#allParams}}{{#isBodyParam}}body = {{paramName}}{{/isBodyParam}}{{/allParams}}
+        )){{#returnType}}(jsonOf[IO, {{>returnType}}]){{/returnType}}
     }
   {{/operation}}
 {{/operations}}
