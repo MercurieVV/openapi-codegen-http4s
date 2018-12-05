@@ -36,8 +36,7 @@ class {{classname}}(httpClient: Client[IO], basePath:  Uri, clientExecutionHelpe
         httpClient.expect{{^returnType}}[Unit]{{/returnType}}(Request[IO](
             method = Method.{{httpMethod}},
             uri = basePath / {{& vendorExtensions.x-routeTypeClient}} {{#allParams}}{{>queryParam}}{{/allParams}},
-            {{#allParams}}{{#isBodyParam}}body = {{paramName}}{{/isBodyParam}}{{/allParams}}
-        )){{#returnType}}(jsonOf[IO, {{>returnType}}]){{/returnType}}
+        ){{#allParams}}{{#isBodyParam}}.withBody({{paramName}}.asJson){{/isBodyParam}}{{/allParams}}){{#returnType}}(jsonOf[IO, {{>returnType}}]){{/returnType}}
     }
   {{/operation}}
 {{/operations}}
