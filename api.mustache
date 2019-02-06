@@ -9,7 +9,7 @@ package {{package}}
 import co.nextwireless.common.ws._
 import co.nextwireless.common.ws.http4s._
 
-import {{basePackage}}._
+import {{invokerPackage}}._
 import {{modelPackage}}._
 
 import {{package}}.impl._
@@ -72,7 +72,7 @@ class {{classname}}(executionHelper: ExecutionHelper, processors: {{classname}}P
     //{{#isListContainer}}case class {{{returnType}}}ListWrapper({{{vendorExtensions.returnTypeVar}}}: List[{{{returnType}}}]){{/isListContainer}}
     case class Request_{{operationId}} (
     {{#allParams}}
-        {{paramName}}: {{#isBodyParam}}{{#futureType}}Task[{{/futureType}}{{/isBodyParam}}{{>dataType}}{{#isBodyParam}}{{#futureType}}]{{/futureType}}{{/isBodyParam}}{{#hasMore}},{{/hasMore}}
+        {{paramName}}: {{>dataType}},
     {{/allParams}}
     )
   {{/operation}}
