@@ -1,0 +1,23 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'org.scala-lang:scala-library:' + scalaVersionMinor
+    }
+}
+apply plugin: 'java'
+repositories {
+    jcenter()
+    mavenCentral()
+    maven { url "https://plugins.gradle.org/m2/" }
+}
+
+dependencies {
+//    runtime subprojects.collect { owner.project(it.path) }
+//    compile gradleApi()
+//    compile localGroovy()
+//    compile 'org.scala-lang:scala-library:' + scalaVersionMinor
+    compile 'io.swagger.codegen.v3:swagger-codegen-cli:3.0.4'
+}
