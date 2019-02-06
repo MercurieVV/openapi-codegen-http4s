@@ -55,17 +55,17 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
     }
 */
 public Map<String, Object> postProcessModels(Map<String, Object> objs) {
-    List<Map<String, String>> recursiveImports = (List)objs.get("imports");
+    List<Map<String, String>> recursiveImports = (List<Map<String, String>>)objs.get("imports");
     if (recursiveImports == null) {
         return objs;
     } else {
-        ListIterator listIterator = recursiveImports.listIterator();
+        ListIterator<Map<String, String>> listIterator = recursiveImports.listIterator();
 
         while(listIterator.hasNext()) {
-            String _import = (String)((Map)listIterator.next()).get("import");
+            String _import = (listIterator.next()).get("import");
             if (this.importMapping.containsKey(_import)) {
-                Map<String, String> newImportMap = new HashMap();
-                newImportMap.put("import", (String)this.importMapping.get(_import));
+                Map<String, String> newImportMap = new HashMap<>();
+                newImportMap.put("import", this.importMapping.get(_import));
                 listIterator.add(newImportMap);
             }
         }
@@ -76,19 +76,17 @@ public Map<String, Object> postProcessModels(Map<String, Object> objs) {
 
     public Map<String, Object> postProcessModelsEnum(Map<String, Object> objs) {
         objs = super.postProcessModelsEnum(objs);
-        List<Map<String, String>> imports = (List)objs.get("imports");
+        List<Map<String, String>> imports = (List<Map<String, String>>)objs.get("imports");
         List<Object> models = (List)objs.get("models");
-        Iterator var4 = models.iterator();
 
-        while(var4.hasNext()) {
-            Object _mo = var4.next();
-            Map<String, Object> mo = (Map)_mo;
-            CodegenModel cm = (CodegenModel)mo.get("model");
+        for (Object _mo : models) {
+            Map<String, Object> mo = (Map) _mo;
+            CodegenModel cm = (CodegenModel) mo.get("model");
             boolean isEnum = ExtensionHelper.getBooleanValue(cm, "x-is-enum");
             if (Boolean.TRUE.equals(isEnum) && cm.allowableValues != null) {
-//                cm.imports.add((String)this.importMapping.get("JsonValue"));
-                Map<String, String> item = new HashMap();
-                item.put("import", (String)this.importMapping.get("JsonValue"));
+//                cm.imports.add(this.importMapping.get("JsonValue"));
+                Map<String, String> item = new HashMap<>();
+                item.put("import", this.importMapping.get("JsonValue"));
                 imports.add(item);
             }
         }
@@ -113,7 +111,7 @@ public Map<String, Object> postProcessModels(Map<String, Object> objs) {
                     p.datatypeWithEnum = p.dataType;
                     if (p.dataFormat != null) {
                         if (p.dataFormat.startsWith(TYPE_PREFIX)) {
-                            final String newtypeName = p.dataFormat.substring(TYPE_PREFIX.length(), p.dataFormat.length());
+                            final String newtypeName = p.dataFormat.substring(TYPE_PREFIX.length());
                             p.vendorExtensions.put("typeName", newtypeName);
                         }
                     }
@@ -180,14 +178,14 @@ public Map<String, Object> postProcessModels(Map<String, Object> objs) {
             toApiImport("import shapeless.tag.@@");
             toApiImport("import shapeless.tag");
 
-            final String newtypeName = cp.dataFormat.substring(NEWTYPE_PREFIX.length(), cp.dataFormat.length());
+            final String newtypeName = cp.dataFormat.substring(NEWTYPE_PREFIX.length());
             cp.vendorExtensions.put("newtypeName", newtypeName);
         }
         if (cp.dataFormat != null && cp.dataFormat.startsWith(TAGGEDPE_PREFIX)) {
             toApiImport("import shapeless.tag.@@");
             toApiImport("import shapeless.tag");
 
-            final String tagName = cp.dataFormat.substring(TAGGEDPE_PREFIX.length(), cp.dataFormat.length());
+            final String tagName = cp.dataFormat.substring(TAGGEDPE_PREFIX.length());
             cp.vendorExtensions.put("tagName", tagName);
         }
     }
