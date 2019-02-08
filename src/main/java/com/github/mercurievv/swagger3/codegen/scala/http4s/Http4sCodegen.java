@@ -115,25 +115,8 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
     }
 
     public Map<String, Object> postProcessModels(Map<String, Object> objs) {
-/*        List<Map<String, String>> recursiveImports = (List<Map<String, String>>) objs.get("imports");
-        if (recursiveImports == null) {
-            return objs;
-        } else {
-            ListIterator<Map<String, String>> listIterator = recursiveImports.listIterator();
-
-            while (listIterator.hasNext()) {
-                String _import = (listIterator.next()).get("import");
-                if (this.importMapping.containsKey(_import)) {
-                    Map<String, String> newImportMap = new HashMap<>();
-                    newImportMap.put("import", this.importMapping.get(_import));
-                    listIterator.add(newImportMap);
-                }
-            }
-
-            return this.postProcessModelsEnum(objs);
-        }*/
-        super.postProcessModels(objs);
-        return this.postProcessModelsEnum(objs);
+        final Map<String, Object> objectMap = super.postProcessModels(objs);
+        return this.postProcessModelsEnum(objectMap);
 
     }
 
@@ -149,11 +132,7 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
         for (CodegenOperation operation : ops) {
             if (operation.returnType == null) {
                 operation.returnType = "Unit";
-            } /*else if (operation.returnType.equals("Object")) {
-                operation.returnType = "Unit";
-            } else if (operation.returnType.equals("Unit")) {
-                operation.returnType = "Unit";
-            }*/ else if (operation.returnType.startsWith("List")) {
+            } else if (operation.returnType.startsWith("List")) {
                 String rt = operation.returnType;
                 int end = rt.lastIndexOf("]");
                 if (end > 0) {
