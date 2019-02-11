@@ -1,0 +1,10 @@
+
+sealed trait {{classname}} extends EnumEntry{
+override def toString: String = this.getClass.getSimpleName.replace("$", "")
+}
+object {{classname}} extends Enum[{{classname}}] with CirceEnum[{{classname}}] {
+val values = findValues
+{{#allowableValues}}{{#enumVars}}  case object {{{name}}} extends {{classname}}
+{{/enumVars}}{{/allowableValues}}
+}
+
