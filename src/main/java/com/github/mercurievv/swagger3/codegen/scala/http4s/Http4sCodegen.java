@@ -7,6 +7,9 @@ import io.swagger.codegen.v3.CodegenType;
 import io.swagger.codegen.v3.generators.scala.AkkaHttpServerCodegen;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.media.ArraySchema;
+import io.swagger.v3.oas.models.media.MapSchema;
+import io.swagger.v3.oas.models.media.ObjectSchema;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import org.slf4j.Logger;
@@ -103,6 +106,18 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
             }
 
             return this.toModelName(schemaType);
+        }
+    }
+    public String getTypeDeclaration(Schema propertySchema) {
+        Schema inner;
+        if (propertySchema instanceof ArraySchema) {
+            inner = ((ArraySchema)propertySchema).getItems();
+            return String.format("%s[%s]", this.getSchemaType(propertySchema), this.getTypeDeclaration(inner));
+        } else if (propertySchema instanceof ObjectSchema && hasSchemaProperties(propertySchema)) {
+            inner = (Schema)propertySchema.getAdditionalProperties();
+            return String.format("%s[String, %s]", this.getSchemaType(propertySchema), this.getTypeDeclaration(inner));
+        } else {
+            return super.getTypeDeclaration(propertySchema);
         }
     }
 
