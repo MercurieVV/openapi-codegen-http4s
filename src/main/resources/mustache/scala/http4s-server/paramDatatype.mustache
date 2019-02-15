@@ -1,1 +1,1 @@
-{{#required}}{{{dataType}}}{{/required}}{{^required}}Option[{{{dataType}}}]{{/required}}
+{{^required}}Option[{{/required}}{{#datatypeWithEnum}}{{{.}}}{{/datatypeWithEnum}}{{^datatypeWithEnum}}{{{dataType}}}{{/datatypeWithEnum}}{{^required}}]{{/required}}
