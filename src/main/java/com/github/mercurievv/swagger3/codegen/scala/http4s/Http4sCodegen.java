@@ -92,6 +92,14 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
             codegenParameter.baseName = bodyName;
             codegenParameter.paramName = bodyName;
         }
+        if(schema == null)
+            schema = this.getSchemaFromBody(body);
+        if(schema.getEnum() != null && !schema.getEnum().isEmpty()){
+            codegenParameter.baseType = name;
+            codegenParameter.dataType = name;
+            //codegenParameter.datatypeWithEnum = name;
+        }
+
         return codegenParameter;
     }
 
