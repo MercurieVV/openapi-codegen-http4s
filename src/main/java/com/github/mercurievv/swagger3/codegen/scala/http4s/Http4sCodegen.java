@@ -8,9 +8,9 @@ import io.swagger.codegen.v3.generators.scala.AkkaHttpServerCodegen;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.media.ArraySchema;
-import io.swagger.v3.oas.models.media.MapSchema;
 import io.swagger.v3.oas.models.media.ObjectSchema;
 import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +35,7 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
 
     @Override
     public String getDefaultTemplateDir() {
-        return "scala/http4s-server";
+        return "http4s-server";
     }
 
     public CodegenType getTag() {
@@ -234,7 +234,6 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
     public CodegenOperation fromOperation(String ppath, String httpMethod, Operation operation, Map<String, Schema> schemas, OpenAPI openAPI) {
         CodegenOperation op = super.fromOperation(ppath, httpMethod, operation, schemas, openAPI);
 //        op.vendorExtensions.put("x-enumImports", enumImports);//.stream().collect(Collectors.joining("", "import " + modelPackage + ".", "\\n")));
-        useCustomTypes(op);
 
         http4sCode(operation, op);
 
@@ -295,17 +294,18 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
         op.vendorExtensions.put("x-routeTypeClient", pathStringClient);
     }
 
-    private void useCustomTypes(CodegenOperation op) {
-        op.allParams
-                .forEach(p -> {
-                    p.datatypeWithEnum = p.dataType;
-                    if (p.dataFormat != null) {
-                        if (p.dataFormat.startsWith(TYPE_PREFIX)) {
-                            final String newtypeName = p.dataFormat.substring(TYPE_PREFIX.length());
-                            p.vendorExtensions.put("typeName", newtypeName);
-                        }
-                    }
-                });
+    @Override
+    public CodegenParameter fromParameter(Parameter parameter, Set<String> imports) {
+        final CodegenParameter p  = super.fromParameter(parameter, imports);
+        if(p.datatypeWithEnum == null)
+            p.datatypeWithEnum = p.dataType;
+        if (p.dataFormat != null) {
+            if (p.dataFormat.startsWith(TYPE_PREFIX)) {
+                final String newtypeName = p.dataFormat.substring(TYPE_PREFIX.length());
+                p.vendorExtensions.put("typeName", newtypeName);
+            }
+        }
+        return p;
     }
 
     private int order(CodegenParameter codegenParameter) {

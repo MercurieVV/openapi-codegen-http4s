@@ -47,6 +47,14 @@ class {{classname}}(executionHelper: ExecutionHelper, processors: {{classname}}P
     }
 }
 
+object {{classname}}{
+{{#operations}}
+    {{#operation}}
+        {{#allParams}}{{#isEnum}}{{>enumClass}}{{/isEnum}}{{/allParams}}
+    {{/operation}}
+{{/operations}}
+}
+
 //INPUT PARAMS DECODERS
 {{#operations}}
   {{#operation}}
