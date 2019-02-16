@@ -62,12 +62,12 @@ object {{classname}}{
     {{^isBodyParam}}
     {{#isListContainer}}
     object Decoder_{{operationId}}_{{paramName}} {
-     def unapplySeq(params: Map[String, {{>dataType}}]) = params.get("{{operationId}}_{{paramName}}")
-     def unapply(params: Map[String, {{>dataType}}]) = unapplySeq(params)
+     def unapplySeq(params: Map[String, {{>optionableDataType}}]) = params.get("{{operationId}}_{{paramName}}")
+     def unapply(params: Map[String, {{>optionableDataType}}]) = unapplySeq(params)
     }
     {{/isListContainer}}
     {{^isListContainer}}
-    object Decoder_{{operationId}}_{{paramName}} extends {{^required}}Optional{{/required}}ValidatingQueryParamDecoderMatcher[{{{dataType}}}]("{{paramName}}")
+    object Decoder_{{operationId}}_{{paramName}} extends {{^required}}Optional{{/required}}ValidatingQueryParamDecoderMatcher[{{{optionableListableDataType}}}]("{{paramName}}")
     {{/isListContainer}}
     {{/isBodyParam}}
     {{/allParams}}
@@ -80,7 +80,7 @@ object {{classname}}{
     //{{#isListContainer}}case class {{{returnType}}}ListWrapper({{{vendorExtensions.returnTypeVar}}}: List[{{{returnType}}}]){{/isListContainer}}
     case class Request_{{operationId}} (
     {{#allParams}}
-        {{paramName}}: {{>dataType}},
+        {{paramName}}: {{>optionableListableDataType}},
     {{/allParams}}
     )
   {{/operation}}
