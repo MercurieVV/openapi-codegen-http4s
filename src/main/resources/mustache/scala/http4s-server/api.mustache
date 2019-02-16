@@ -67,7 +67,7 @@ object {{classname}}{
     }
     {{/isListContainer}}
     {{^isListContainer}}
-    object Decoder_{{operationId}}_{{paramName}} extends {{^required}}Optional{{/required}}ValidatingQueryParamDecoderMatcher[{{{optionableListableDataType}}}]("{{paramName}}")
+    object Decoder_{{operationId}}_{{paramName}} extends {{^required}}Optional{{/required}}ValidatingQueryParamDecoderMatcher[{{{dataType}}}]("{{paramName}}")
     {{/isListContainer}}
     {{/isBodyParam}}
     {{/allParams}}
