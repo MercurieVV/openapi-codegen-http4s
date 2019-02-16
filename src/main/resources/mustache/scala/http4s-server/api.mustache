@@ -62,8 +62,8 @@ object {{classname}}{
     {{^isBodyParam}}
     {{#isListContainer}}
     object Decoder_{{operationId}}_{{paramName}} {
-     def unapplySeq(params: Map[String, {{>paramDatatype}}]) = params.get("{{operationId}}_{{paramName}}")
-     def unapply(params: Map[String, {{>paramDatatype}}]) = unapplySeq(params)
+     def unapplySeq(params: Map[String, {{>dataType}}]) = params.get("{{operationId}}_{{paramName}}")
+     def unapply(params: Map[String, {{>dataType}}]) = unapplySeq(params)
     }
     {{/isListContainer}}
     {{^isListContainer}}
