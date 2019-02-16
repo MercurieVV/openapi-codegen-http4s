@@ -35,7 +35,7 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
 
     @Override
     public String getDefaultTemplateDir() {
-        return "http4s-server";
+        return "scala/http4s-server";
     }
 
     public CodegenType getTag() {
