@@ -53,26 +53,20 @@ object {{classname}}{
         {{#allParams}}{{#isEnum}}{{>enumClass}}{{/isEnum}}{{/allParams}}
     {{/operation}}
 {{/operations}}
-}
+
 
 //INPUT PARAMS DECODERS
 {{#operations}}
-  {{#operation}}
-    {{#allParams}}
-    {{^isBodyParam}}
-    {{#isListContainer}}
-    object Decoder_{{operationId}}_{{paramName}} {
-     def unapplySeq(params: Map[String, {{>optionableDataType}}]) = params.get("{{operationId}}_{{paramName}}")
-     def unapply(params: Map[String, {{>optionableDataType}}]) = unapplySeq(params)
-    }
-    {{/isListContainer}}
-    {{^isListContainer}}
-    object Decoder_{{operationId}}_{{paramName}} extends {{^required}}Optional{{/required}}ValidatingQueryParamDecoderMatcher[{{{dataType}}}]("{{paramName}}")
-    {{/isListContainer}}
-    {{/isBodyParam}}
-    {{/allParams}}
-  {{/operation}}
+    {{#operation}}
+        {{#allParams}}
+            {{^isBodyParam}}
+                object Decoder_{{operationId}}_{{paramName}} extends {{^required}}Optional{{/required}}ValidatingQueryParamDecoderMatcher[{{#isListContainer}}List[{{/isListContainer}}{{{dataType}}}{{#isListContainer}}]{{/isListContainer}}]("{{paramName}}")
+            {{/isBodyParam}}
+        {{/allParams}}
+    {{/operation}}
 {{/operations}}
+
+}
 
 //INPUT DATA CASE CLASSES
 {{#operations}}
