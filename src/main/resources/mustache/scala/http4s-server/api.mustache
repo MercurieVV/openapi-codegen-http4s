@@ -45,14 +45,7 @@ class {{classname}}(executionHelper: ExecutionHelper, processors: {{classname}}P
   {{/operation}}
 {{/operations}}
     }
-}
 
-object {{classname}}{
-{{#operations}}
-    {{#operation}}
-        {{#allParams}}{{#isEnum}}{{>enumClass}}{{/isEnum}}{{/allParams}}
-    {{/operation}}
-{{/operations}}
 
 
 //INPUT PARAMS DECODERS
@@ -60,9 +53,17 @@ object {{classname}}{
     {{#operation}}
         {{#allParams}}
             {{^isBodyParam}}
-                object Decoder_{{operationId}}_{{paramName}} extends {{^required}}Optional{{/required}}ValidatingQueryParamDecoderMatcher[{{#isListContainer}}List[{{/isListContainer}}{{{dataType}}}{{#isListContainer}}]{{/isListContainer}}]("{{paramName}}")
+object Decoder_{{operationId}}_{{paramName}} extends {{^required}}Optional{{/required}}ValidatingQueryParamDecoderMatcher[{{#isListContainer}}List[{{/isListContainer}}{{{dataType}}}{{#isListContainer}}]{{/isListContainer}}]("{{paramName}}")
             {{/isBodyParam}}
         {{/allParams}}
+    {{/operation}}
+{{/operations}}
+}
+
+object {{classname}}{
+{{#operations}}
+    {{#operation}}
+        {{#allParams}}{{#isEnum}}{{>enumClass}}{{/isEnum}}{{/allParams}}
     {{/operation}}
 {{/operations}}
 
