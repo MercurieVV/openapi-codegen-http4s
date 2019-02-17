@@ -53,7 +53,7 @@ class {{classname}}(executionHelper: ExecutionHelper, processors: {{classname}}P
     {{#operation}}
         {{#allParams}}
             {{^isBodyParam}}
-object Decoder_{{operationId}}_{{paramName}} extends {{^required}}Optional{{/required}}ValidatingQueryParamDecoderMatcher[{{#isListContainer}}List[{{/isListContainer}}{{{dataType}}}{{#isListContainer}}]{{/isListContainer}}]("{{paramName}}")
+object Decoder_{{operationId}}_{{paramName}} extends {{^required}}Optional{{/required}}ValidatingQueryParamDecoderMatcher[{{{dataType}}}]("{{paramName}}")
             {{/isBodyParam}}
         {{/allParams}}
     {{/operation}}
