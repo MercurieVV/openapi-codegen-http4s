@@ -179,6 +179,7 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
 
     @Override
     public CodegenProperty fromProperty(String name, Schema p) {
+        name = sanitieProperty(name);
         CodegenProperty codegenProperty = super.fromProperty(name, p);
         List<String> predicates = new ArrayList<>();
         if (codegenProperty.minimum != null) {
@@ -227,6 +228,12 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
 //        if (codegenProperty.isEnum)
 //            enumImports.add(codegenProperty.datatypeWithEnum);
         return codegenProperty;
+    }
+
+    private String sanitieProperty(String name) {
+        if(name.contains("-") && !name.startsWith("`"))
+            return "`" + name + "`";
+        return name;
     }
 
 
