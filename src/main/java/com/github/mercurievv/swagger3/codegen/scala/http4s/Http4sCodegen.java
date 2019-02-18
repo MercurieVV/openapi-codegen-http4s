@@ -99,6 +99,8 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
             codegenParameter.dataType = name;
             //codegenParameter.datatypeWithEnum = name;
         }
+        if(codegenParameter.datatypeWithEnum == null)
+            codegenParameter.datatypeWithEnum = codegenParameter.dataType;
 
         return codegenParameter;
     }
