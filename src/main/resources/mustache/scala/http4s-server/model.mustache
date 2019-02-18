@@ -27,7 +27,7 @@ import enumeratum._
         {{^isEnum}}
     case class {{classname}} (
     {{#vars}}
-        {{#vendorExtensions.isExternalEnum}} {{/vendorExtensions.isExternalEnum}}{{& name}}: {{>dataType}}{{#hasMore}},{{/hasMore}}
+        {{#vendorExtensions.isExternalEnum}} {{/vendorExtensions.isExternalEnum}}{{& name}}: {{>optionableListableDataType}}{{#hasMore}},{{/hasMore}}
     {{/vars}}
     )
 
