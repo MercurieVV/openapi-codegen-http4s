@@ -1,5 +1,3 @@
-package com.github.mercurievv.swagger3.codegen.scala.http4s;
-
 import io.swagger.codegen.v3.CodegenOperation;
 import io.swagger.codegen.v3.CodegenParameter;
 import io.swagger.codegen.v3.CodegenProperty;
@@ -178,8 +176,22 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
 
 
     @Override
+    public CodegenParameter fromParameter(Parameter parameter, Set<String> imports) {
+        final CodegenParameter p  = super.fromParameter(parameter, imports);
+        if(p.datatypeWithEnum == null)
+            p.datatypeWithEnum = p.dataType;
+        if (p.dataFormat != null) {
+            if (p.dataFormat.startsWith(TYPE_PREFIX)) {
+                final String newtypeName = p.dataFormat.substring(TYPE_PREFIX.length());
+                p.vendorExtensions.put("typeName", newtypeName);
+            }
+        }
+        return p;
+    }
+
+    @Override
     public CodegenProperty fromProperty(String name, Schema p) {
-        name = sanitieProperty(name);
+        name = sanitizeProperty(name);
         CodegenProperty codegenProperty = super.fromProperty(name, p);
         List<String> predicates = new ArrayList<>();
         if (codegenProperty.minimum != null) {
@@ -230,7 +242,7 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
         return codegenProperty;
     }
 
-    private String sanitieProperty(String name) {
+    private String sanitizeProperty(String name) {
         if(name.contains("-") && !name.startsWith("`"))
             return "`" + name + "`";
         return name;
@@ -299,20 +311,6 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
         op.vendorExtensions.put("x-routeType", pathStringServer);
 
         op.vendorExtensions.put("x-routeTypeClient", pathStringClient);
-    }
-
-    @Override
-    public CodegenParameter fromParameter(Parameter parameter, Set<String> imports) {
-        final CodegenParameter p  = super.fromParameter(parameter, imports);
-        if(p.datatypeWithEnum == null)
-            p.datatypeWithEnum = p.dataType;
-        if (p.dataFormat != null) {
-            if (p.dataFormat.startsWith(TYPE_PREFIX)) {
-                final String newtypeName = p.dataFormat.substring(TYPE_PREFIX.length());
-                p.vendorExtensions.put("typeName", newtypeName);
-            }
-        }
-        return p;
     }
 
     private int order(CodegenParameter codegenParameter) {
