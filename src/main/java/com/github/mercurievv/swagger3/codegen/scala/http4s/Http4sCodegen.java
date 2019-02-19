@@ -35,7 +35,7 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
 
     @Override
     public String getDefaultTemplateDir() {
-        return "scala/http4s-server";
+        return "scala/http4s-server2";
     }
 
     public CodegenType getTag() {
@@ -101,7 +101,6 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
         }
         if(codegenParameter.datatypeWithEnum == null)
             codegenParameter.datatypeWithEnum = codegenParameter.dataType;
-
         return codegenParameter;
     }
 
@@ -195,7 +194,7 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
 
     @Override
     public CodegenProperty fromProperty(String name, Schema p) {
-        name = sanitizeProperty(name);
+        name = sanitieProperty(name);
         CodegenProperty codegenProperty = super.fromProperty(name, p);
         List<String> predicates = new ArrayList<>();
         if (codegenProperty.minimum != null) {
@@ -246,7 +245,7 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
         return codegenProperty;
     }
 
-    private String sanitizeProperty(String name) {
+    private String sanitieProperty(String name) {
         if(name.contains("-") && !name.startsWith("`"))
             return "`" + name + "`";
         return name;
