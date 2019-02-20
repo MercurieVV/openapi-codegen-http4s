@@ -104,6 +104,11 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
         return codegenParameter;
     }
 
+    @Override
+    public String findCommonPrefixOfVars(List<Object> vars) {
+        return "";
+    }
+
     public String getSchemaType(Schema schema) {
         String schemaType = super.getSchemaType(schema);
         schemaType = this.getAlias(schemaType);
