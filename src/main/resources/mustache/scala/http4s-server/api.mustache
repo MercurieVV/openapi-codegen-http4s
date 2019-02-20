@@ -75,7 +75,7 @@ object {{classname}}{
     //{{#isListContainer}}case class {{{returnType}}}ListWrapper({{{vendorExtensions.returnTypeVar}}}: List[{{{returnType}}}]){{/isListContainer}}
     case class Request_{{operationId}} (
     {{#allParams}}
-        {{paramName}}: {{>optionableListableDataType}},
+        {{paramName}}: {{>optionableDataType}},
     {{/allParams}}
     )
   {{/operation}}
