@@ -23,10 +23,10 @@ import org.http4s.circe._
 import org.http4s.dsl._
 import org.http4s.dsl.impl.Root
 import cats.effect._, org.http4s.dsl.io._, scala.concurrent.ExecutionContext.Implicits.global
-import DefaultRequestProcessorExecuterImpl._
 import cats.data.EitherT
 
 class {{classname}}(executionHelper: ExecutionHelper, processors: {{classname}}ProcessorsModule) {
+   import executionHelper._
    val httpService = HttpService[IO] {
 {{#operations}}
   {{#operation}}
