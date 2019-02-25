@@ -35,7 +35,7 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
 
     @Override
     public String getDefaultTemplateDir() {
-        return "scala/http4s-server";
+        return "scala/http4s-client";
     }
 
     public CodegenType getTag() {
@@ -195,6 +195,12 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
             }
         }
         return p;
+    }
+
+    @Override
+    public String toParamName(String name) {
+        final String paramName = this.reservedWords.contains(name) ? this.escapeReservedWord(name) : name;
+        return sanitieProperty(paramName);
     }
 
     @Override
