@@ -202,12 +202,6 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
     }
 
     @Override
-    protected boolean isReservedWord(String word) {
-        final boolean reservedWord = super.isReservedWord(word);
-        return (reservedWord || (word.contains("-") && !word.startsWith("`")));
-    }
-
-    @Override
     public CodegenProperty fromProperty(String name, Schema p) {
         name = sanitieProperty(name);
         CodegenProperty codegenProperty = super.fromProperty(name, p);
@@ -262,6 +256,12 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
 
     private String sanitieProperty(String name) {
         return isReservedWord(name) ? this.escapeReservedWord(name) : name;
+    }
+
+    @Override
+    protected boolean isReservedWord(String word) {
+        final boolean reservedWord = super.isReservedWord(word);
+        return (reservedWord || (word.contains("-") && !word.startsWith("`")));
     }
 
     @Override
@@ -372,6 +372,7 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
             return varName;
         }
 
+/*
         // string
         String var = value.replaceAll("\\W+", "_");
         if (var.matches("\\d.*")) {
@@ -379,6 +380,8 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
         } else {
             return var;
         }
+*/
+        return value;
     }
 
     private String processParams(Operation operation, String pathString, final List<CodegenParameter> params) {
