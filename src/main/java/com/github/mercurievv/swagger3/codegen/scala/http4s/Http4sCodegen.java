@@ -269,7 +269,7 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
         if (name.startsWith("`"))
             return name;
         else
-            return super.escapeReservedWord(name);
+            return "`" + name + "`";
     }
 
     @Override
