@@ -92,14 +92,14 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
             codegenParameter.baseName = bodyName;
             codegenParameter.paramName = bodyName;
         }
-        if(schema == null)
+        if (schema == null)
             schema = this.getSchemaFromBody(body);
-        if(schema.getEnum() != null && !schema.getEnum().isEmpty()){
+        if (schema.getEnum() != null && !schema.getEnum().isEmpty()) {
             codegenParameter.baseType = name;
             codegenParameter.dataType = name;
             //codegenParameter.datatypeWithEnum = name;
         }
-        if(codegenParameter.datatypeWithEnum == null)
+        if (codegenParameter.datatypeWithEnum == null)
             codegenParameter.datatypeWithEnum = codegenParameter.dataType;
         return codegenParameter;
     }
@@ -122,13 +122,14 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
             return this.toModelName(schemaType);
         }
     }
+
     public String getTypeDeclaration(Schema propertySchema) {
         Schema inner;
         if (propertySchema instanceof ArraySchema) {
-            inner = ((ArraySchema)propertySchema).getItems();
+            inner = ((ArraySchema) propertySchema).getItems();
             return String.format("%s[%s]", this.getSchemaType(propertySchema), this.getTypeDeclaration(inner));
         } else if (propertySchema instanceof ObjectSchema && hasSchemaProperties(propertySchema)) {
-            inner = (Schema)propertySchema.getAdditionalProperties();
+            inner = (Schema) propertySchema.getAdditionalProperties();
             return String.format("%s[String, %s]", this.getSchemaType(propertySchema), this.getTypeDeclaration(inner));
         } else {
             return super.getTypeDeclaration(propertySchema);
@@ -177,16 +178,14 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
 
     @Override
     public String toEnumVarName(String value, String datatype) {
-        String varName = toEnumVarNameNoCasing(value, datatype);
-        if (varName.equals("new")) varName = "`new`";
-        return varName;
+        return toEnumVarNameNoCasing(sanitieProperty(value), datatype);
     }
 
 
     @Override
     public CodegenParameter fromParameter(Parameter parameter, Set<String> imports) {
-        final CodegenParameter p  = super.fromParameter(parameter, imports);
-        if(p.datatypeWithEnum == null)
+        final CodegenParameter p = super.fromParameter(parameter, imports);
+        if (p.datatypeWithEnum == null)
             p.datatypeWithEnum = p.dataType;
         if (p.dataFormat != null) {
             if (p.dataFormat.startsWith(TYPE_PREFIX)) {
@@ -199,8 +198,13 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
 
     @Override
     public String toParamName(String name) {
-        final String paramName = this.reservedWords.contains(name) ? this.escapeReservedWord(name) : name;
-        return sanitieProperty(paramName);
+        return sanitieProperty(name);
+    }
+
+    @Override
+    protected boolean isReservedWord(String word) {
+        final boolean reservedWord = super.isReservedWord(word);
+        return (reservedWord || (word.contains("-") && !word.startsWith("`")));
     }
 
     @Override
@@ -257,11 +261,16 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
     }
 
     private String sanitieProperty(String name) {
-        if(name.contains("-") && !name.startsWith("`"))
-            return "`" + name + "`";
-        return name;
+        return isReservedWord(name) ? this.escapeReservedWord(name) : name;
     }
 
+    @Override
+    public String escapeReservedWord(String name) {
+        if (name.startsWith("`"))
+            return name;
+        else
+            return super.escapeReservedWord(name);
+    }
 
     @Override
     public CodegenOperation fromOperation(String ppath, String httpMethod, Operation operation, Map<String, Schema> schemas, OpenAPI openAPI) {
