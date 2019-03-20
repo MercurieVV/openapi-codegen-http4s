@@ -1,9 +1,6 @@
 package com.github.mercurievv.swagger3.codegen.scala.http4s;
 
-import io.swagger.codegen.v3.CodegenOperation;
-import io.swagger.codegen.v3.CodegenParameter;
-import io.swagger.codegen.v3.CodegenProperty;
-import io.swagger.codegen.v3.CodegenType;
+import io.swagger.codegen.v3.*;
 import io.swagger.codegen.v3.generators.scala.AkkaHttpServerCodegen;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
@@ -32,6 +29,12 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
     private static final String NEWTYPE_PREFIX = "newtype-";
     private static final String TAGGEDPE_PREFIX = "tagged-";
 
+    public Http4sCodegen() {
+        super();
+        this.cliOptions.add(new CliOption("apiImports", "semi-colon separated impors"));
+        this.cliOptions.add(new CliOption("modelImports", "semi-colon separated impors"));
+
+    }
 
     @Override
     public String getDefaultTemplateDir() {
@@ -55,6 +58,13 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
         super.processOpts();
 
         importMapping.clear();
+
+        if (this.additionalProperties.containsKey("apiImports"))
+            Arrays.asList(this.additionalProperties.get("apiImports").toString().split(";"))
+                    .forEach(this::toApiImport);
+        if (this.additionalProperties.containsKey("modelImports"))
+            Arrays.asList(this.additionalProperties.get("modelImports").toString().split(";"))
+                    .forEach(this::toModelImport);
 
 //        instantiationTypes.put("array", "List");
         instantiationTypes.put("map", "Map");
@@ -242,12 +252,10 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
             toModelImport("import eu.timepit.refined.api.Refined");
             toModelImport("import eu.timepit.refined.auto._");
             toModelImport("import eu.timepit.refined.numeric._");
-            toModelImport("import co.nextwireless.newtype.tags._");
             toApiImport("import eu.timepit.refined._");
             toApiImport("import eu.timepit.refined.api.Refined");
             toApiImport("import eu.timepit.refined.auto._");
             toApiImport("import eu.timepit.refined.numeric._");
-            toApiImport("import co.nextwireless.newtype.tags._");
         }
 //        if (codegenProperty.isEnum)
 //            enumImports.add(codegenProperty.datatypeWithEnum);

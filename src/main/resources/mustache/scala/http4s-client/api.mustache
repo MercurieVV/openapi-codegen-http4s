@@ -5,10 +5,6 @@ package {{package}}
 {{#imports}}import {{import}}
 {{/imports}}
 
-import co.nextwireless.common.types._
-import co.nextwireless.common.ws._
-import co.nextwireless.common.ws.http4s._
-
 import {{invokerPackage}}._
 import {{modelPackage}}._
 
@@ -26,7 +22,6 @@ import org.http4s.{HttpService, Uri}
 import cats.effect._, org.http4s.dsl.io._, scala.concurrent.ExecutionContext.Implicits.global
 import DefaultRequestProcessorExecuter._
 import cats.data.EitherT
-import co.nextwireless.common.ws.http4s.client._
 
 class {{classname}}(httpClient: Client[IO], basePath:  Uri, clientExecutionHelper: ClientExecutionHelper) {
     import clientExecutionHelper._
