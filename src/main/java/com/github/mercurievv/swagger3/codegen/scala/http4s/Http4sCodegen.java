@@ -59,14 +59,7 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
 
         importMapping.clear();
 
-        if (this.additionalProperties.containsKey("apiImports"))
-            Arrays.asList(this.additionalProperties.get("apiImports").toString().split(";"))
-                    .forEach(this::toApiImport);
-        if (this.additionalProperties.containsKey("modelImports"))
-            Arrays.asList(this.additionalProperties.get("modelImports").toString().split(";"))
-                    .forEach(this::toModelImport);
-
-//        instantiationTypes.put("array", "List");
+        //        instantiationTypes.put("array", "List");
         instantiationTypes.put("map", "Map");
 
 //        typeMapping.put("FeatureTestResult", "FeatureTestResult.FeatureTestResult");
@@ -152,6 +145,16 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
 
     public String toEnumName(CodegenProperty property) {
         return this.sanitizeName(camelize(property.name)) + "Enum";
+    }
+
+    @Override
+    public CodegenModel fromModel(String name, Schema schema, Map<String, Schema> allDefinitions) {
+        final CodegenModel codegenModel = super.fromModel(name, schema, allDefinitions);
+        if (this.additionalProperties.containsKey("modelImports"))
+            Arrays.asList(this.additionalProperties.get("modelImports").toString().split(";"))
+                    .forEach(i->addImport(codegenModel, i));
+
+        return codegenModel;
     }
 
     public Map<String, Object> postProcessModels(Map<String, Object> objs) {
@@ -298,6 +301,8 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
 //        addHasMore((List)op.requiredParams);
         addHasMore((List) op.allParams);
 
+        if (this.additionalProperties.containsKey("apiImports"))
+            op.imports.addAll(Arrays.asList(this.additionalProperties.get("apiImports").toString().split(";")));
         return op;
     }
 
