@@ -1,4 +1,4 @@
-package com.github.mercurievv.swagger3.codegen.scala.http4s;
+package zzz;
 
 import io.swagger.codegen.v3.*;
 import io.swagger.codegen.v3.generators.scala.AkkaHttpServerCodegen;
@@ -150,9 +150,13 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
     @Override
     public CodegenModel fromModel(String name, Schema schema, Map<String, Schema> allDefinitions) {
         final CodegenModel codegenModel = super.fromModel(name, schema, allDefinitions);
-        if (this.additionalProperties.containsKey("modelImports"))
-            Arrays.asList(this.additionalProperties.get("modelImports").toString().split(";"))
-                    .forEach(i->addImport(codegenModel, i));
+        if (this.additionalProperties.containsKey("modelImports")){
+            final List<String> modelImports = Arrays.asList(this.additionalProperties.get("modelImports").toString().split(";"));
+            codegenModel.imports.addAll(Arrays.asList(this.additionalProperties.get("modelImports").toString().split(";")));
+            modelImports.forEach(i -> {
+                importMapping.put(i, i);
+            });
+        }
 
         return codegenModel;
     }
@@ -301,8 +305,13 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
 //        addHasMore((List)op.requiredParams);
         addHasMore((List) op.allParams);
 
-        if (this.additionalProperties.containsKey("apiImports"))
+        if (this.additionalProperties.containsKey("apiImports")){
+            final List<String> modelImports = Arrays.asList(this.additionalProperties.get("apiImports").toString().split(";"));
             op.imports.addAll(Arrays.asList(this.additionalProperties.get("apiImports").toString().split(";")));
+            modelImports.forEach(i -> {
+                importMapping.put(i, i);
+            });
+        }
         return op;
     }
 
