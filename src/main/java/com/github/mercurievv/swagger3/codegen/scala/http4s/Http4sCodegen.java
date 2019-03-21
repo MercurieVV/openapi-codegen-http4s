@@ -1,4 +1,4 @@
-package zzz;
+package com.github.mercurievv.swagger3.codegen.scala.http4s;
 
 import io.swagger.codegen.v3.*;
 import io.swagger.codegen.v3.generators.scala.AkkaHttpServerCodegen;
