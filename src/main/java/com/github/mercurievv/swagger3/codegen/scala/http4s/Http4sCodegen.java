@@ -177,16 +177,16 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
         }
         List<CodegenOperation> ops = (List<CodegenOperation>) operations.get("operation");
         for (CodegenOperation operation : ops) {
-            if (operation.returnType == null) {
-                operation.returnType = "Unit";
-            } else if (operation.returnType.startsWith("List")) {
-                String rt = operation.returnType;
-                int end = rt.lastIndexOf("]");
-                if (end > 0) {
-                    operation.returnType = rt.substring("List[".length(), end).trim();
-                    operation.returnContainer = "List";
-                    String varName = operation.returnType.substring(0, 1).toLowerCase() + operation.returnType.substring(1) + "s";
-                    operation.vendorExtensions.put("returnTypeVar", toVarName(varName));
+            if (operation.returnType != null) {
+                if (operation.returnType.startsWith("List")) {
+                    String rt = operation.returnType;
+                    int end = rt.lastIndexOf("]");
+                    if (end > 0) {
+                        operation.returnType = rt.substring("List[".length(), end).trim();
+                        operation.returnContainer = "List";
+                        String varName = operation.returnType.substring(0, 1).toLowerCase() + operation.returnType.substring(1) + "s";
+                        operation.vendorExtensions.put("returnTypeVar", toVarName(varName));
+                    }
                 }
             }
         }
