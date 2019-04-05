@@ -33,6 +33,7 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
         super();
         this.cliOptions.add(new CliOption("apiImports", "semi-colon separated impors"));
         this.cliOptions.add(new CliOption("modelImports", "semi-colon separated impors"));
+        this.cliOptions.add(new CliOption("dateTimeClass", "dateTime class"));
 
     }
 
@@ -83,8 +84,13 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
         importMapping.put("ZonedDateTime", "java.time.ZonedDateTime");
 
         importMapping.put("OffsetDateTime", "java.time.OffsetDateTime");
+        importMapping.put("LocalDateTime", "java.time.LocalDateTime");
 
         importMapping.put("BigDecimal", "scala.BigDecimal");
+
+        if (this.additionalProperties.containsKey("dateTimeClass")) {
+            typeMapping.put("DateTime", this.additionalProperties.get("dateTimeClass").toString());
+        }
     }
 
     @Override
