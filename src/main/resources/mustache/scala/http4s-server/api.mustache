@@ -12,31 +12,39 @@ import {{modelPackage}}._
 //import {{package}}.impl._
 import io.circe.generic.auto._
 import io.circe.syntax._
+import cats.Applicative
+import cats.FlatMap
+import cats.implicits._
 
 import org.http4s.HttpService
 import org.http4s.QueryParamDecoder.fromUnsafeCast
 import org.http4s.circe._
 import org.http4s.dsl._
 import org.http4s.dsl.impl.Root
-import cats.effect._, org.http4s.dsl.io._, scala.concurrent.ExecutionContext.Implicits.global
+import org.http4s.dsl.io._, scala.concurrent.ExecutionContext.Implicits.global
 import cats.data.EitherT
 
-class {{classname}}(executionHelper: ExecutionHelper, processors: {{classname}}ProcessorsModule) {
-   import executionHelper._
-   val httpService = HttpService[IO] {
+class {{classname}}[H4F[_], PF[_]](
+    ex: Http4sFunctionExecutor[H4F, PF],
+{{#operations}}
+    {{#operation}}
+        {{operationId}}: (Request_{{operationId}}) => PF[{{>returnType}}],
+    {{/operation}}
+{{/operations}}
+)(implicit H4F: Applicative[H4F] with FlatMap[H4F]) {
+   val httpService = HttpService[H4F] {
 {{#operations}}
   {{#operation}}
         case req @ {{httpMethod}} -> Root / {{& vendorExtensions.x-routeType}} =>
-          executionHelper.process{{^isListContainer}}Single{{/isListContainer}}{{#isListContainer}}Sequence{{/isListContainer}}[Request_{{operationId}}, {{>returnType}}]( //Process_{{operationId}}
-            processors.{{operationId}}
-            ,{for(
-                {{#allParams}}{{#isQueryParam}}{{paramName}} <- EitherT(IO {validation({{paramName}}D)});
-                {{/isQueryParam}}{{/allParams}}
-                req <- EitherT.liftF[IO, Throwable, Request_{{operationId}}](IO {Request_{{operationId}}({{>params}})})
-            ) yield req}.value
+          ex.process[Request_{{operationId}}, {{>returnType}}]( //Process_{{operationId}}
+            {{operationId}}
+            ,for{
+                {{#allParams}}{{#isQueryParam}}{{paramName}} <- H4F.pure({{paramName}}D)
+                {{/isQueryParam}}{{#isBodyParam}}body <- ex.processBody[{{>paramDatatype}}](req){{/isBodyParam}}{{/allParams}}
+                req <- H4F.pure(Request_{{operationId}}({{>params}}))
+            } yield req
             , (_: {{>returnType}}).asJson
             , req
-            , processors.buildInfo
           )
   {{/operation}}
 {{/operations}}
@@ -49,7 +57,7 @@ class {{classname}}(executionHelper: ExecutionHelper, processors: {{classname}}P
     {{#operation}}
         {{#allParams}}
             {{^isBodyParam}}
-object Decoder_{{operationId}}_{{paramName}} extends {{^required}}Optional{{/required}}ValidatingQueryParamDecoderMatcher[{{>dataType}}]("{{paramName}}")
+object Decoder_{{operationId}}_{{paramName}} extends {{^required}}Optional{{/required}}QueryParamDecoderMatcher[{{>dataType}}]("{{paramName}}")
             {{/isBodyParam}}
         {{/allParams}}
     {{/operation}}
