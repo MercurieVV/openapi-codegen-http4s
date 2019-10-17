@@ -2,9 +2,6 @@
 
 package {{package}}
 
-{{#imports}}import {{import}}
-{{/imports}}
-
 
 //import {{invokerPackage}}._
 import {{modelPackage}}._
@@ -24,6 +21,9 @@ import org.http4s.dsl._
 import org.http4s.dsl.impl.Root
 import org.http4s.dsl.io._, scala.concurrent.ExecutionContext.Implicits.global
 import cats.data.EitherT
+
+{{#imports}}import {{import}}
+{{/imports}}
 
 
 class {{classname}}[F[_]](
