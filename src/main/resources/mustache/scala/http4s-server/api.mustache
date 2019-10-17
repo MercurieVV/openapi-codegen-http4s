@@ -12,38 +12,40 @@ import {{modelPackage}}._
 //import {{package}}.impl._
 import io.circe.generic.auto._
 import io.circe.syntax._
-import cats.Applicative
-import cats.FlatMap
+import cats.MonadError
 import cats.implicits._
+import cats.effect.Sync
 
 import org.http4s.HttpService
 import org.http4s.QueryParamDecoder.fromUnsafeCast
 import org.http4s.circe._
+import org.http4s.circe.CirceEntityCodec._
 import org.http4s.dsl._
 import org.http4s.dsl.impl.Root
 import org.http4s.dsl.io._, scala.concurrent.ExecutionContext.Implicits.global
 import cats.data.EitherT
 
-class {{classname}}[H4F[_], PF[_]](
-    ex: Http4sFunctionExecutor[H4F, PF],
+
+class {{classname}}[F[_]](
+    ex: Http4sFunctionExecutor[F, F],
 {{#operations}}
     {{#operation}}
-        {{operationId}}: (Request_{{operationId}}) => PF[{{>returnType}}],
+        {{operationId}}: (Request_{{operationId}}) => F[{{>returnType}}],
     {{/operation}}
 {{/operations}}
-)(implicit H4F: Applicative[H4F] with FlatMap[H4F]) {
-   val httpService = HttpService[H4F] {
+)(implicit F: MonadError[F, Throwable], sync: Sync[F]) {
+   val httpService = HttpService[F] {
 {{#operations}}
   {{#operation}}
         case req @ {{httpMethod}} -> Root / {{& vendorExtensions.x-routeType}} =>
           ex.process[Request_{{operationId}}, {{>returnType}}]( //Process_{{operationId}}
             {{operationId}}
             ,for{
-                {{#allParams}}{{#isQueryParam}}{{paramName}} <- H4F.pure({{paramName}}D)
-                {{/isQueryParam}}{{#isBodyParam}}body <- ex.processBody[{{>paramDatatype}}](req){{/isBodyParam}}{{/allParams}}
-                req <- H4F.pure(Request_{{operationId}}({{>params}}))
+                {{#allParams}}{{#isQueryParam}}{{paramName}} <- F.pure({{paramName}}D)
+                {{/isQueryParam}}{{#isBodyParam}}body <- req.as[{{>paramDatatype}}]{{/isBodyParam}}{{/allParams}}
+                req <- F.pure(Request_{{operationId}}({{>params}}))
             } yield req
-            , (_: {{>returnType}}).asJson
+            //, (_: {{>returnType}}).asJson
             , req
           )
   {{/operation}}
