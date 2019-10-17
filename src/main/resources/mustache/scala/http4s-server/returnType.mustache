@@ -1,1 +1,1 @@
-{{#returnContainer}}{{vendorExtensions.typeName}}{{{returnType}}}{{/returnContainer}}{{^returnContainer}}{{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}Unit{{/returnType}}{{/returnContainer}}
+{{#returnContainer}}{{#isListContainer}}{{vendorExtensions.x-containerType-start}}{{/isListContainer}}{{vendorExtensions.typeName}}{{{returnType}}}{{#isListContainer}}{{vendorExtensions.x-containerType-end}}{{/isListContainer}}{{/returnContainer}}{{^returnContainer}}{{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}Unit{{/returnType}}{{/returnContainer}}

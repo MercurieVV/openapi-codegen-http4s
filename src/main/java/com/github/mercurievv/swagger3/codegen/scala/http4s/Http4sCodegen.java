@@ -1,6 +1,7 @@
 package com.github.mercurievv.swagger3.codegen.scala.http4s;
 
 import io.swagger.codegen.v3.*;
+import io.swagger.codegen.v3.generators.handlebars.ExtensionHelper;
 import io.swagger.codegen.v3.generators.scala.AkkaHttpServerCodegen;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
@@ -34,6 +35,7 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
         this.cliOptions.add(new CliOption("apiImports", "semi-colon separated impors"));
         this.cliOptions.add(new CliOption("modelImports", "semi-colon separated impors"));
         this.cliOptions.add(new CliOption("dateTimeClass", "dateTime class"));
+        this.cliOptions.add(new CliOption("collectionType", "F[ENTITY] type of collection"));
 
     }
 
@@ -156,7 +158,7 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
     @Override
     public CodegenModel fromModel(String name, Schema schema, Map<String, Schema> allDefinitions) {
         final CodegenModel codegenModel = super.fromModel(name, schema, allDefinitions);
-        if (this.additionalProperties.containsKey("modelImports")){
+        if (this.additionalProperties.containsKey("modelImports")) {
             final List<String> modelImports = Arrays.asList(this.additionalProperties.get("modelImports").toString().split(";"));
             codegenModel.imports.addAll(Arrays.asList(this.additionalProperties.get("modelImports").toString().split(";")));
             modelImports.forEach(i -> {
@@ -311,13 +313,24 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
 //        addHasMore((List)op.requiredParams);
         addHasMore((List) op.allParams);
 
-        if (this.additionalProperties.containsKey("apiImports")){
+        if (this.additionalProperties.containsKey("apiImports")) {
             final List<String> modelImports = Arrays.asList(this.additionalProperties.get("apiImports").toString().split(";"));
             op.imports.addAll(Arrays.asList(this.additionalProperties.get("apiImports").toString().split(";")));
             modelImports.forEach(i -> {
                 importMapping.put(i, i);
             });
         }
+
+        final String containerType = ((String) this.additionalProperties.getOrDefault("defaultContainerType", "List[ENTITY]"))
+                .replace(";", ",")
+                .replace("<", "[")
+                .replace(">", "]")
+                ;
+        final String[] split = containerType.split("ENTITY");
+        System.out.println("split[0] = " + split[1]);
+        op.getVendorExtensions().put("x-containerType-start", split[0]);
+        op.getVendorExtensions().put("x-containerType-end", split[1]);
+
         return op;
     }
 
@@ -419,7 +432,7 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
                     .filter(codegenParameter -> !codegenParameter.baseName.isEmpty())
                     .map(codegenParameter -> "Decoder_" + operation.getOperationId() + "_" + codegenParameter.baseName + "(" + codegenParameter.baseName + "D)")
                     .collect(Collectors.joining(" +& ", " :? ", ""));
-            System.out.println("queryParams = " + queryParams);
+//            System.out.println("queryParams = " + queryParams);
             pathString = pathString + queryParams;
         }
         return pathString;
@@ -430,7 +443,7 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
             for (int i = 0; i < objs.size(); ++i) {
                 objs.get(i).secondaryParam = i > 0;
                 objs.get(i).getVendorExtensions().put("x-has-more", i < objs.size() - 1);
-                System.out.println("i = " + i + " " + objs.get(i).secondaryParam + " " + (objs.size() - 1) + " " + objs.get(i).paramName);
+//                System.out.println("i = " + i + " " + objs.get(i).secondaryParam + " " + (objs.size() - 1) + " " + objs.get(i).paramName);
             }
         }
 
