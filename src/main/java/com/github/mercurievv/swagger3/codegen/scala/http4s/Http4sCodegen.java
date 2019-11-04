@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created with IntelliJ IDEA.
@@ -159,9 +160,10 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
     public CodegenModel fromModel(String name, Schema schema, Map<String, Schema> allDefinitions) {
         final CodegenModel codegenModel = super.fromModel(name, schema, allDefinitions);
         if (this.additionalProperties.containsKey("modelImports")) {
-            final List<String> modelImports = Arrays.asList(this.additionalProperties.get("modelImports").toString().split(";"));
-            codegenModel.imports.addAll(Arrays.asList(this.additionalProperties.get("modelImports").toString().split(";")));
+            final Stream<String> modelImports = Arrays.stream(this.additionalProperties.get("modelImports").toString().split(";"))
+                    .filter(s -> !s.isEmpty());
             modelImports.forEach(i -> {
+                codegenModel.imports.add(i);
                 importMapping.put(i, i);
             });
         }
@@ -314,9 +316,10 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
         addHasMore((List) op.allParams);
 
         if (this.additionalProperties.containsKey("apiImports")) {
-            final List<String> modelImports = Arrays.asList(this.additionalProperties.get("apiImports").toString().split(";"));
-            op.imports.addAll(Arrays.asList(this.additionalProperties.get("apiImports").toString().split(";")));
+            final Stream<String> modelImports = Arrays.stream(this.additionalProperties.get("apiImports").toString().split(";"))
+                    .filter(s -> !s.isEmpty());
             modelImports.forEach(i -> {
+                op.imports.add(i);
                 importMapping.put(i, i);
             });
         }
