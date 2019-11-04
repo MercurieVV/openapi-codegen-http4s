@@ -20,6 +20,7 @@ import org.http4s.client.Client
 import org.http4s.{HttpService, Uri}
 import org.http4s.dsl.io._, scala.concurrent.ExecutionContext.Implicits.global
 import cats.data.EitherT
+import cats.effect.Sync
 
 class {{classname}}[F[_]](httpClient: Client[F], basePath:  Uri, clientExecutionHelper: ClientExecutionHelper)(implicit sync: Sync[F]) {
     import clientExecutionHelper._
