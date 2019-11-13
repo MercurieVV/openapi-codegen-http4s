@@ -20,12 +20,13 @@ import cats.data.EitherT
 {{#imports}}import {{import}}
 {{/imports}}
 
-class {{classname}}(executionHelper: ExecutionHelper, processors: {{classname}}ProcessorsModule) {
+
+class {{classname}}(executionHelper: ExecutionHelper, processors: {{classname}}ProcessorsModule, root: Path = Root) {
    import executionHelper._
    val httpService = HttpService[IO] {
 {{#operations}}
   {{#operation}}
-        case req @ {{httpMethod}} -> Root / {{& vendorExtensions.x-routeType}} =>
+        case req @ {{httpMethod}} -> root / {{& vendorExtensions.x-routeType}} =>
           executionHelper.process{{^isListContainer}}Single{{/isListContainer}}{{#isListContainer}}Sequence{{/isListContainer}}[Request_{{operationId}}, {{>returnType}}]( //Process_{{operationId}}
             processors.{{operationId}}
             ,{for(
