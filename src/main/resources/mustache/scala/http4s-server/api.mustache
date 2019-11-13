@@ -2,9 +2,6 @@
 
 package {{package}}
 
-{{#imports}}import {{import}}
-{{/imports}}
-
 
 //import {{invokerPackage}}._
 import {{modelPackage}}._
@@ -20,6 +17,8 @@ import org.http4s.dsl._
 import org.http4s.dsl.impl.Root
 import cats.effect._, org.http4s.dsl.io._, scala.concurrent.ExecutionContext.Implicits.global
 import cats.data.EitherT
+{{#imports}}import {{import}}
+{{/imports}}
 
 class {{classname}}(executionHelper: ExecutionHelper, processors: {{classname}}ProcessorsModule) {
    import executionHelper._
