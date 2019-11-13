@@ -33,11 +33,11 @@ class {{classname}}[F[_]](
         {{operationId}}: (Request_{{operationId}}) => F[{{>returnType}}],
     {{/operation}}
 {{/operations}}
-)(implicit F: MonadError[F, Throwable], sync: Sync[F]) {
+)(implicit F: MonadError[F, Throwable], sync: Sync[F], root: Path = Root) {
    val httpService = HttpService[F] {
 {{#operations}}
   {{#operation}}
-        case req @ {{httpMethod}} -> Root / {{& vendorExtensions.x-routeType}} =>
+        case req @ {{httpMethod}} -> root / {{& vendorExtensions.x-routeType}} =>
           ex.process[Request_{{operationId}}, {{>returnType}}]( //Process_{{operationId}}
             {{operationId}}
             ,for{
