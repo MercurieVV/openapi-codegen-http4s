@@ -34,7 +34,7 @@ class {{classname}}[F[_]](
     {{/operation}}
 {{/operations}}
 )(implicit F: MonadError[F, Throwable], sync: Sync[F], root: Path = Root) {
-   val httpService = HttpService[F] {
+   val httpService: HttpRoutes[F] = HttpRoutes.of[F] {
 {{#operations}}
   {{#operation}}
         case req @ {{httpMethod}} -> root / {{& vendorExtensions.x-routeType}} =>
