@@ -1,6 +1,6 @@
 package com.github.mercurievv.swagger3.codegen.scala.http4s;
 
-import io.swagger.codegen.v3.CodegenType;
+import org.openapitools.codegen.CodegenType;
 
 /**
  * Created with IntelliJ IDEA.
@@ -11,7 +11,7 @@ import io.swagger.codegen.v3.CodegenType;
  */
 public class Http4sClientCodegen extends Http4sCodegen {
     @Override
-    public String getDefaultTemplateDir() {
+    public String templateDir() {
         return "scala/http4s-client";
     }
 

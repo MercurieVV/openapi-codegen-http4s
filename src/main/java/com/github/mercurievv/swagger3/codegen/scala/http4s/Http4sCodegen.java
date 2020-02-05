@@ -1,8 +1,5 @@
 package com.github.mercurievv.swagger3.codegen.scala.http4s;
 
-import io.swagger.codegen.v3.*;
-import io.swagger.codegen.v3.generators.handlebars.ExtensionHelper;
-import io.swagger.codegen.v3.generators.scala.AkkaHttpServerCodegen;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.media.ArraySchema;
@@ -10,12 +7,19 @@ import io.swagger.v3.oas.models.media.ObjectSchema;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
+import io.swagger.v3.oas.models.servers.Server;
+import org.apache.commons.lang3.StringUtils;
+import org.openapitools.codegen.*;
+import org.openapitools.codegen.languages.ScalaAkkaClientCodegen;
+import org.openapitools.codegen.utils.ModelUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static org.openapitools.codegen.utils.StringUtils.camelize;
 
 /**
  * Created with IntelliJ IDEA.
@@ -24,7 +28,7 @@ import java.util.stream.Stream;
  * Time: 5:19 PM
  * Contacts: email: mercurievvss@gmail.com Skype: 'grobokopytoff' or 'mercurievv'
  */
-public class Http4sCodegen extends AkkaHttpServerCodegen {
+public class Http4sCodegen extends ScalaAkkaClientCodegen {
     private static final Logger LOGGER = LoggerFactory.getLogger(Http4sCodegen.class);
 
     private static final String TYPE_PREFIX = "type-";
@@ -41,7 +45,7 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
     }
 
     @Override
-    public String getDefaultTemplateDir() {
+    public String templateDir() {
         return "scala/http4s-server";
     }
 
@@ -97,15 +101,22 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
     }
 
     @Override
-    public CodegenParameter fromRequestBody(RequestBody body, String name, Schema schema, Map<String, Schema> schemas, Set<String> imports) {
-        final CodegenParameter codegenParameter = super.fromRequestBody(body, name, schema, schemas, imports);
+    public CodegenParameter fromRequestBody(RequestBody body, Set<String> imports, String bodyParameterName) {
+        final CodegenParameter codegenParameter = super.fromRequestBody(body, imports, bodyParameterName);
         if (body.getExtensions() != null && body.getExtensions().get("x-varname") != null) {
             final String bodyName = (String) body.getExtensions().get("x-varname");
             codegenParameter.baseName = bodyName;
             codegenParameter.paramName = bodyName;
         }
-        if (schema == null)
-            schema = this.getSchemaFromBody(body);
+
+        Schema schema = ModelUtils.getSchemaFromRequestBody(body);
+        String name = null;
+        if (StringUtils.isNotBlank(schema.get$ref())) {
+            name = ModelUtils.getSimpleRef(schema.get$ref());
+        }
+        schema = ModelUtils.getReferencedSchema(this.openAPI, schema);
+
+
         if (schema.getEnum() != null && !schema.getEnum().isEmpty()) {
             codegenParameter.baseType = name;
             codegenParameter.dataType = name;
@@ -140,7 +151,7 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
         if (propertySchema instanceof ArraySchema) {
             inner = ((ArraySchema) propertySchema).getItems();
             return String.format("%s[%s]", this.getSchemaType(propertySchema), this.getTypeDeclaration(inner));
-        } else if (propertySchema instanceof ObjectSchema && hasSchemaProperties(propertySchema)) {
+        } else if (propertySchema instanceof ObjectSchema /*&& hasSchemaProperties(propertySchema)*/) { //fixme: dont remember why it was
             inner = (Schema) propertySchema.getAdditionalProperties();
             return String.format("%s[String, %s]", this.getSchemaType(propertySchema), this.getTypeDeclaration(inner));
         } else {
@@ -157,8 +168,8 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
     }
 
     @Override
-    public CodegenModel fromModel(String name, Schema schema, Map<String, Schema> allDefinitions) {
-        final CodegenModel codegenModel = super.fromModel(name, schema, allDefinitions);
+    public CodegenModel fromModel(String name, Schema schema) {
+        final CodegenModel codegenModel = super.fromModel(name, schema);
         if (this.additionalProperties.containsKey("modelImports")) {
             final Stream<String> modelImports = Arrays.stream(this.additionalProperties.get("modelImports").toString().split(";"))
                     .filter(s -> !s.isEmpty());
@@ -178,8 +189,8 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
     }
 
     @Override
-    public Map<String, Object> postProcessOperations(Map<String, Object> objs) {
-        Map<String, Object> stringObjectMap = super.postProcessOperations(objs);
+    public Map<String, Object> postProcessOperationsWithModels(Map<String, Object> objs, List<Object> allModels) {
+        Map<String, Object> stringObjectMap = super.postProcessOperationsWithModels(objs, allModels);
 
         Map<String, Object> operations = (Map<String, Object>) stringObjectMap.get("operations");
         if (operations == null) {
@@ -298,8 +309,11 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
     }
 
     @Override
-    public CodegenOperation fromOperation(String ppath, String httpMethod, Operation operation, Map<String, Schema> schemas, OpenAPI openAPI) {
-        CodegenOperation op = super.fromOperation(ppath, httpMethod, operation, schemas, openAPI);
+    public CodegenOperation fromOperation(String path,
+                                          String httpMethod,
+                                          Operation operation,
+                                          List<Server> servers) {
+        CodegenOperation op = super.fromOperation(path, httpMethod, operation, servers);
 //        op.vendorExtensions.put("x-enumImports", enumImports);//.stream().collect(Collectors.joining("", "import " + modelPackage + ".", "\\n")));
 
         http4sCode(operation, op);
@@ -331,8 +345,8 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
                 ;
         final String[] split = containerType.split("ENTITY");
         System.out.println("split[0] = " + split[1]);
-        op.getVendorExtensions().put("x-containerType-start", split[0]);
-        op.getVendorExtensions().put("x-containerType-end", split[1]);
+        op.vendorExtensions.put("x-containerType-start", split[0]);
+        op.vendorExtensions.put("x-containerType-end", split[1]);
 
         return op;
     }
@@ -370,7 +384,7 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
             path.add("Header \"" + param.baseName + "\" " + param.dataType);
 
             String paramType = param.dataType;
-            if (param.getIsListContainer()) {
+            if (param.isListContainer) {
                 paramType = makeQueryListType(paramType, param.collectionFormat);
             }
             type.add("Maybe " + paramType);
@@ -381,17 +395,17 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
     }
 
     private int order(CodegenParameter codegenParameter) {
-        if (codegenParameter.getIsHeaderParam())
+        if (codegenParameter.isHeaderParam)
             return 1;
-        if (codegenParameter.getIsCookieParam())
+        if (codegenParameter.isCookieParam)
             return 2;
-        if (codegenParameter.getIsPathParam())
+        if (codegenParameter.isPathParam)
             return 3;
-        if (codegenParameter.getIsQueryParam())
+        if (codegenParameter.isQueryParam)
             return 4;
-        if (codegenParameter.getIsFormParam())
+        if (codegenParameter.isFormParam)
             return 5;
-        if (codegenParameter.getIsBodyParam())
+        if (codegenParameter.isBodyParam)
             return 6;
         return 7;
     }
@@ -445,7 +459,7 @@ public class Http4sCodegen extends AkkaHttpServerCodegen {
         if (objs != null) {
             for (int i = 0; i < objs.size(); ++i) {
                 objs.get(i).secondaryParam = i > 0;
-                objs.get(i).getVendorExtensions().put("x-has-more", i < objs.size() - 1);
+                objs.get(i).vendorExtensions.put("x-has-more", i < objs.size() - 1);
 //                System.out.println("i = " + i + " " + objs.get(i).secondaryParam + " " + (objs.size() - 1) + " " + objs.get(i).paramName);
             }
         }
