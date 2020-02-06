@@ -18,19 +18,20 @@ import org.http4s.dsl._
 import org.http4s.dsl.io._
 import org.http4s.client.Client
 import org.http4s.{HttpService, Uri}
-import cats.effect._, org.http4s.dsl.io._, scala.concurrent.ExecutionContext.Implicits.global
+import org.http4s.dsl.io._, scala.concurrent.ExecutionContext.Implicits.global
 import cats.data.EitherT
+import cats.effect.Sync
 
-class {{classname}}(httpClient: Client[IO], basePath:  Uri, clientExecutionHelper: ClientExecutionHelper) {
+class {{classname}}[F[_]](httpClient: Client[F], basePath:  Uri, clientExecutionHelper: ClientExecutionHelper)(implicit sync: Sync[F]) {
     import clientExecutionHelper._
 {{#operations}}
   {{#operation}}
     {{#isWrapper}}{{#isListContainer}}case class {{{returnType}}}ListWrapper({{{vendorExtensions.returnTypeVar}}}: List[{{{returnType}}}]){{/isListContainer}}{{/isWrapper}}
-    def {{nickname}}({{#allParams}}{{paramName}}: {{#required}}{{dataType}}{{>valuePredicates}}{{/required}}{{^required}}Option[{{dataType}}{{>valuePredicates}}]{{/required}} {{#defaultValue}} = ({{{defaultValue}}}){{/defaultValue}}{{#hasMore}}, {{/hasMore}}{{/allParams}})/*: IO[{{>returnType}}]*/ = {
-        httpClient.{{#returnType}}expect{{/returnType}}{{^returnType}}fetch{{/returnType}}(Request[IO](
+    def {{nickname}}({{#allParams}}{{paramName}}: {{#required}}{{dataType}}{{>valuePredicates}}{{/required}}{{^required}}Option[{{dataType}}{{>valuePredicates}}]{{/required}} {{#defaultValue}} = ({{{defaultValue}}}){{/defaultValue}}{{#hasMore}}, {{/hasMore}}{{/allParams}})/*: F[{{>returnType}}]*/ = {
+        httpClient.{{#returnType}}expect{{/returnType}}{{^returnType}}fetch{{/returnType}}(Request[F](
             method = Method.{{httpMethod}},
             uri = basePath / {{& vendorExtensions.x-routeTypeClient}} {{#allParams}}{{>queryParam}}{{/allParams}},
-        ){{#allParams}}{{#isBodyParam}}.withBody({{paramName}}.asJson){{/isBodyParam}}{{/allParams}}){{^returnType}}(emptyResponse){{/returnType}}{{#returnType}}(jsonOf[IO, {{>returnType}}]){{/returnType}}
+        ){{#allParams}}{{#isBodyParam}}.withBody({{paramName}}.asJson){{/isBodyParam}}{{/allParams}}){{^returnType}}(emptyResponse){{/returnType}}{{#returnType}}(jsonOf[F, {{>returnType}}]){{/returnType}}
     }
   {{/operation}}
 {{/operations}}

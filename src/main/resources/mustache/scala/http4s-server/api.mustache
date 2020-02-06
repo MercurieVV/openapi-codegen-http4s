@@ -9,34 +9,47 @@ import {{modelPackage}}._
 //import {{package}}.impl._
 import io.circe.generic.auto._
 import io.circe.syntax._
+import cats.MonadError
+import cats.implicits._
+import cats.effect.Sync
 
 import org.http4s.HttpService
 import org.http4s.QueryParamDecoder.fromUnsafeCast
 import org.http4s.circe._
+import org.http4s.circe.CirceEntityCodec._
+import org.http4s.HttpRoutes
 import org.http4s.dsl._
 import org.http4s.dsl.impl.Root
-import cats.effect._, org.http4s.dsl.io._, scala.concurrent.ExecutionContext.Implicits.global
+import org.http4s.dsl.io._, scala.concurrent.ExecutionContext.Implicits.global
 import cats.data.EitherT
 {{#imports}}import {{import}}
 {{/imports}}
 
+{{#imports}}import {{import}}
+{{/imports}}
 
-class {{classname}}(executionHelper: ExecutionHelper, processors: {{classname}}ProcessorsModule, root: Path = Root) {
-   import executionHelper._
-   val httpService = HttpService[IO] {
+
+class {{classname}}[F[_]](
+    ex: Http4sFunctionExecutor[F, F],
+{{#operations}}
+    {{#operation}}
+        {{operationId}}: (Request_{{operationId}}) => F[{{>returnType}}],
+    {{/operation}}
+{{/operations}}
+)(implicit F: MonadError[F, Throwable], sync: Sync[F], root: Path = Root) {
+   val httpService: HttpRoutes[F] = HttpRoutes.of[F] {
 {{#operations}}
   {{#operation}}
         case req @ {{httpMethod}} -> root / {{& vendorExtensions.x-routeType}} =>
-          executionHelper.process{{^isListContainer}}Single{{/isListContainer}}{{#isListContainer}}Sequence{{/isListContainer}}[Request_{{operationId}}, {{>returnType}}]( //Process_{{operationId}}
-            processors.{{operationId}}
-            ,{for(
-                {{#allParams}}{{#isQueryParam}}{{paramName}} <- EitherT(IO {validation({{paramName}}D)});
-                {{/isQueryParam}}{{/allParams}}
-                req <- EitherT.liftF[IO, Throwable, Request_{{operationId}}](IO {Request_{{operationId}}({{>params}})})
-            ) yield req}.value
-            , (_: {{>returnType}}).asJson
+          ex.process[Request_{{operationId}}, {{>returnType}}]( //Process_{{operationId}}
+            {{operationId}}
+            ,for{
+                {{#allParams}}{{#isQueryParam}}{{paramName}} <- F.pure({{paramName}}D)
+                {{/isQueryParam}}{{#isBodyParam}}body <- req.as[{{>paramDatatype}}]{{/isBodyParam}}{{/allParams}}
+                req <- F.pure(Request_{{operationId}}({{>params}}))
+            } yield req
+            //, (_: {{>returnType}}).asJson
             , req
-            , processors.buildInfo
           )
   {{/operation}}
 {{/operations}}
@@ -49,7 +62,7 @@ class {{classname}}(executionHelper: ExecutionHelper, processors: {{classname}}P
     {{#operation}}
         {{#allParams}}
             {{^isBodyParam}}
-object Decoder_{{operationId}}_{{paramName}} extends {{^required}}Optional{{/required}}ValidatingQueryParamDecoderMatcher[{{>dataType}}]("{{paramName}}")
+object Decoder_{{operationId}}_{{paramName}} extends {{^required}}Optional{{/required}}QueryParamDecoderMatcher[{{>dataType}}]("{{paramName}}")
             {{/isBodyParam}}
         {{/allParams}}
     {{/operation}}

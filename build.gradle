@@ -1,14 +1,38 @@
 apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: "maven-publish"
 repositories {
     jcenter()
     mavenCentral()
     maven { url "https://plugins.gradle.org/m2/" }
 }
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = 'com.github.mercurievv'
+            artifactId = 'openapi-codegen-http4s'
+            version = '0.0.1-SNAPSHOT'
 
+            from components.java
+        }
+    }
+    repositories{
+        maven {
+            name "nexus"
+            url "https://oss.sonatype.org/content/repositories/snapshots"
+//        url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+            credentials {
+                username project.repoUser
+                password project.repoPassword
+            }
+        }
+    }
+}
 dependencies {
 //    runtime subprojects.collect { owner.project(it.path) }
 //    compile gradleApi()
 //    compile localGroovy()
 //    compile 'org.scala-lang:scala-library:' + scalaVersionMinor
-    compile 'io.swagger.codegen.v3:swagger-codegen-cli:3.0.4'
+    compile 'org.openapitools:openapi-generator:4.2.2'
 }
+
