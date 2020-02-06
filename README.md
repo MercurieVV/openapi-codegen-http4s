@@ -1,6 +1,6 @@
-[![](https://jitpack.io/v/MercurieVV/swagger3-codegen-http4s.svg)](https://jitpack.io/#MercurieVV/swagger3-codegen-http4s)
-# swagger3-codegen-http4s
-Swagger codegen for http4s.
+![Java CI](https://github.com/MercurieVV/openapi-codegen-http4s/workflows/Java%20CI/badge.svg)
+# openapi-codegen-http4s
+OpenAPI(Swagger) v3 codegen for http4s.
 Unfortunatelly at the moment I dont know (have time) to show code example with SBT. If you could send me example I would be very appreciate.
 
 Gradle
