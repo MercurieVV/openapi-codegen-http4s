@@ -1,4 +1,4 @@
-package com.github.mercurievv.swagger3.codegen.scala.http4s;
+package com.github.mercurievv.openapi.codegen.scala.http4s;
 
 import org.openapitools.codegen.CodegenType;
 

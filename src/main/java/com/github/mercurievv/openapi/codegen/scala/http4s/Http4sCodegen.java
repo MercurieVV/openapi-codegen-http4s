@@ -1,6 +1,5 @@
-package com.github.mercurievv.swagger3.codegen.scala.http4s;
+package com.github.mercurievv.openapi.codegen.scala.http4s;
 
-import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.ObjectSchema;
