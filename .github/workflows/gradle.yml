@@ -17,3 +17,6 @@ jobs:
       run: chmod +x gradlew
     - name: Build with Gradle
       run: ./gradlew build publish
+      env:
+        OSS_SONATYPE_LOGIN: ${{ secrets.OSS_SONATYPE_LOGIN }}
+        OSS_SONATYPE_PASSWORD: ${{ secrets.OSS_SONATYPE_PASSWORD }}
