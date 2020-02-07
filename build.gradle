@@ -11,7 +11,7 @@ publishing {
         maven(MavenPublication) {
             groupId = 'com.github.mercurievv'
             artifactId = 'openapi-codegen-http4s'
-            version = '0.0.1-SNAPSHOT'
+            version = '1.0.7'
 
             from components.java
         }
@@ -19,8 +19,8 @@ publishing {
     repositories{
         maven {
             name "nexus"
-            url "https://oss.sonatype.org/content/repositories/snapshots"
-//        url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+//            url "https://oss.sonatype.org/content/repositories/snapshots"
+            url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
             credentials {
                 username System.getenv('OSS_SONATYPE_LOGIN')
                 password System.getenv('OSS_SONATYPE_PASSWORD')
