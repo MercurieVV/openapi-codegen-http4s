@@ -7,7 +7,9 @@ repositories {
     mavenCentral()
     maven { url "https://plugins.gradle.org/m2/" }
 }
-
+dependencies {
+    compile 'org.openapitools:openapi-generator:4.2.2'
+}
 task sourcesJar(type: Jar) {
     classifier = 'sources'
     from sourceSets.main.allSource
@@ -16,6 +18,7 @@ artifacts {
     archives sourcesJar
 }
 signing {
+    useGpgCmd()
     sign configurations.archives
 }
 
@@ -64,9 +67,5 @@ uploadArchives {
     }
 }
 
-signing {
-    useGpgCmd()
-    sign configurations.archives
-}
 
 
