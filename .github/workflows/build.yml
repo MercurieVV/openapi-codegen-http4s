@@ -32,7 +32,7 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
-      run: ./gradlew uploadArchives -Psigning.gnupg.keyName=0D7CEE98
+      run: ./gradlew uploadArchives -Psigning.gnupg.keyName=0D7CEE98 --info --stacktrace
       env:
         SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
         SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
