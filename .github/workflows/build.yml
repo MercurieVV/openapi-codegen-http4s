@@ -23,8 +23,10 @@ jobs:
         chmod 600 ~/.gnupg/*
         echo RELOADAGENT | gpg-connect-agent
         echo $PGP_SECRET | base64 --decode --ignore-garbage | gpg --import --no-tty --batch --yes
+        gpg-preset-passphrase --passphrase $PGP_PASSPHRASE
       env:
         PGP_SECRET: ${{secrets.PGP_SECRET}}
+        PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
