@@ -20,6 +20,7 @@ jobs:
         echo use-agent >> ~/.gnupg/gpg.conf
         echo pinentry-mode loopback >> ~/.gnupg/gpg.conf
         echo allow-loopback-pinentry >> ~/.gnupg/gpg-agent.conf
+        echo allow-preset-passphrase >> ~/.gnupg/gpg-agent.conf
         chmod 600 ~/.gnupg/*
         echo RELOADAGENT | gpg-connect-agent
         echo $PGP_SECRET | base64 --decode --ignore-garbage | gpg --import --no-tty --batch --yes
