@@ -18,8 +18,9 @@ artifacts {
     archives sourcesJar
 }
 signing {
+    //required { isReleaseVersion && gradle.taskGraph.hasTask("publish") }
     useGpgCmd()
-    sign configurations.archives
+    sign publishing.publications.main
 }
 
 uploadArchives {
