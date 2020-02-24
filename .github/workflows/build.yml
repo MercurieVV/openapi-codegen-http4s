@@ -2,7 +2,7 @@ name: build
 on: [push, pull_request]
 
 jobs:
-  build:
+  publish_sonatype:
 
     runs-on: ubuntu-latest
 
@@ -29,7 +29,7 @@ jobs:
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
-    - name: Build with Gradle
+    - name: Deploy snapshot to Sonatype with Gradle
       run: ./gradlew uploadArchives -Psigning.gnupg.keyName=0D7CEE98 -Psigning.gnupg.passphrase=$PGP_PASSPHRASE
       env:
         SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
