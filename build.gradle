@@ -20,7 +20,7 @@ artifacts {
 signing {
     //required { isReleaseVersion && gradle.taskGraph.hasTask("publish") }
     useGpgCmd()
-    sign publishing.publications.main
+    sign configurations.archives
 }
 
 uploadArchives {
