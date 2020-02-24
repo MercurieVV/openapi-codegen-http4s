@@ -2,6 +2,11 @@ apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: "maven-publish"
 apply plugin: 'signing'
+
+group = "com.github.mercurievv"
+archivesBaseName = "openapi-codegen-http4s"
+version = "1.0.8"
+
 repositories {
     jcenter()
     mavenCentral()
